@@ -46,34 +46,34 @@ export function PaymentVerticalCard({
           onClick?.();
         }
       }}
-      className="group relative flex min-h-[360px] flex-col justify-between rounded-[32px] bg-white p-8 sm:p-10 shadow-[0px_1px_3px_rgba(0,0,0,0.05)] transition-all duration-200 hover:-translate-y-1 hover:shadow-xl focus-visible:outline-2 focus-visible:outline-brand cursor-pointer text-left"
+      className="group relative flex h-full min-h-[200px] lg:min-h-0 w-full flex-col justify-between rounded-[24px] sm:rounded-[28px] lg:rounded-[32px] bg-white p-5 sm:p-6 lg:p-6 xl:p-7 shadow-[0px_1px_3px_rgba(0,0,0,0.05)] transition-all duration-200 hover:-translate-y-1 hover:shadow-xl focus-visible:outline-2 focus-visible:outline-brand cursor-pointer text-left"
     >
       {/* Top Section: Icon and Titles */}
-      <div className="flex flex-col items-start gap-4">
+      <div className="flex flex-col items-start gap-2.5 sm:gap-3">
         {/* Header row with Icon and Quick Detail indicator */}
         <div className="flex w-full items-center justify-between">
-          <div className="flex h-14 w-14 items-center justify-center rounded-[16px] bg-[#F1F4F9] transition-transform group-hover:scale-105">
+          <div className="flex h-11 w-11 sm:h-12 sm:w-12 lg:h-13 lg:w-13 items-center justify-center rounded-[14px] sm:rounded-[16px] bg-[#F1F4F9] transition-transform group-hover:scale-105">
             {getIcon()}
           </div>
-          <span className="flex h-8 w-8 items-center justify-center rounded-full bg-transparent text-[#2780C4] opacity-0 transition-all duration-200 group-hover:bg-[#F1F4F9] group-hover:opacity-100">
+          <span className="flex h-7 w-7 sm:h-8 sm:w-8 items-center justify-center rounded-full bg-transparent text-[#2780C4] opacity-0 transition-all duration-200 group-hover:bg-[#F1F4F9] group-hover:opacity-100">
             <ArrowUpRight size={16} />
           </span>
         </div>
 
         {/* Heading 3 */}
-        <div className="mt-2 flex flex-col gap-2">
-          <h2 className="text-2xl sm:text-[28px] font-extrabold leading-[35px] tracking-[-0.7px] text-[#006194]">
+        <div className="mt-1 flex flex-col gap-1 sm:gap-1.5">
+          <h2 className="text-xl sm:text-2xl lg:text-[26px] font-extrabold leading-tight tracking-[-0.7px] text-[#006194]">
             {vertical.title}
           </h2>
-          <p className="text-sm sm:text-[15px] font-medium leading-[24px] text-[#404850]">
+          <p className="text-xs sm:text-sm lg:text-[14px] font-medium leading-snug text-[#404850] line-clamp-2">
             {vertical.description}
           </p>
         </div>
       </div>
 
       {/* Bottom Section: Amount */}
-      <div className="mt-6 flex flex-col items-start">
-        <span className="text-3xl sm:text-[44px] md:text-[48px] font-black leading-none tracking-[-2.4px] text-[#006194] tabular-nums">
+      <div className="mt-3 sm:mt-4 flex flex-col items-start">
+        <span className="text-2xl sm:text-3xl lg:text-[36px] xl:text-[42px] font-black leading-none tracking-[-1.5px] text-[#006194] tabular-nums">
           {vertical.amount}
         </span>
       </div>

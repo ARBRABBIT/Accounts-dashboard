@@ -17,7 +17,11 @@ import {
   Coins,
   Handshake,
   CreditCard,
+  MessageSquare,
+  Eye,
+  EyeOff,
 } from 'lucide-react';
+import { useComments } from '@/components/comments/comment-context';
 
 interface PageItem {
   href: string;
@@ -31,6 +35,13 @@ export function FloatingNavigation() {
   const pathname = usePathname();
   const [isOpen, setIsOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
+  const {
+    pageComments,
+    isCommentMode,
+    toggleCommentMode,
+    showPins,
+    setShowPins,
+  } = useComments();
 
   const pages: PageItem[] = [
     {
@@ -129,30 +140,84 @@ export function FloatingNavigation() {
       {/* Floating Bottom Navigation Bar */}
       <nav
         aria-label="Screen navigator"
-        className="fixed bottom-6 left-1/2 z-40 flex -translate-x-1/2 items-center gap-1.5 rounded-full border border-line bg-white/95 p-1.5 shadow-xl backdrop-blur"
+        className="fixed bottom-2.5 sm:bottom-3 lg:bottom-3.5 left-1/2 z-40 flex -translate-x-1/2 items-center gap-1 sm:gap-1.5 rounded-full border border-line bg-white/95 p-1 sm:p-1.5 shadow-xl backdrop-blur"
       >
         <button
           type="button"
           aria-haspopup="dialog"
           aria-expanded={isOpen}
           onClick={() => setIsOpen(true)}
-          className="flex items-center gap-2 rounded-full bg-brand px-5 py-2.5 text-sm font-semibold text-white shadow-xs transition-transform hover:scale-[1.02] focus-visible:outline-2 focus-visible:outline-brand"
+          className="flex items-center gap-1.5 sm:gap-2 rounded-full bg-brand px-3.5 sm:px-4 py-1.5 sm:py-2 text-xs sm:text-sm font-semibold text-white shadow-xs transition-transform hover:scale-[1.02] focus-visible:outline-2 focus-visible:outline-brand"
         >
-          <PanelsTopLeft size={17} />
+          <PanelsTopLeft size={16} />
           <span>Pages ({pages.length})</span>
         </button>
 
         <Link
           href="/design-system"
-          className={`flex items-center gap-2 rounded-full px-4 py-2.5 text-sm font-semibold transition-colors ${
+          className={`flex items-center gap-1.5 sm:gap-2 rounded-full px-3 sm:px-3.5 py-1.5 sm:py-2 text-xs sm:text-sm font-semibold transition-colors ${
             pathname === '/design-system'
               ? 'bg-subtle text-brand font-bold'
               : 'text-muted hover:bg-subtle hover:text-ink'
           }`}
         >
-          <Palette size={17} />
+          <Palette size={16} />
           <span className="hidden sm:inline">Design system</span>
         </Link>
+
+        <div className="h-3.5 w-px bg-line mx-0.5" />
+
+        {/* Figma Comment Mode Trigger */}
+        <button
+          type="button"
+          onClick={toggleCommentMode}
+          aria-pressed={isCommentMode}
+          title="Toggle Figma comment mode (Hotkey: C)"
+          className={`group flex items-center gap-1.5 sm:gap-2 rounded-full px-3 sm:px-3.5 py-1.5 sm:py-2 text-xs sm:text-sm font-semibold transition-all ${
+            isCommentMode
+              ? 'bg-brand text-white shadow-xs'
+              : 'text-muted hover:bg-subtle hover:text-ink'
+          }`}
+        >
+          <MessageSquare
+            size={16}
+            className={isCommentMode ? 'fill-white/20' : ''}
+          />
+          <span>Comment</span>
+          {pageComments.length > 0 && (
+            <span
+              className={`flex h-4.5 min-w-4.5 items-center justify-center rounded-full px-1 text-[11px] font-bold ${
+                isCommentMode
+                  ? 'bg-white text-brand'
+                  : 'bg-brand/10 text-brand'
+              }`}
+            >
+              {pageComments.length}
+            </span>
+          )}
+          <kbd
+            className={`hidden rounded px-1 py-0.5 text-[9px] font-mono sm:inline-block ${
+              isCommentMode
+                ? 'bg-white/20 text-white'
+                : 'bg-subtle text-muted'
+            }`}
+          >
+            C
+          </kbd>
+        </button>
+
+        {/* Pin Visibility Toggle (only rendered if page has comments) */}
+        {pageComments.length > 0 && (
+          <button
+            type="button"
+            onClick={() => setShowPins(!showPins)}
+            title={showPins ? 'Hide comment pins on this screen' : 'Show comment pins on this screen'}
+            aria-label={showPins ? 'Hide comment pins' : 'Show comment pins'}
+            className="flex h-9 w-9 items-center justify-center rounded-full text-muted hover:bg-subtle hover:text-ink transition-colors"
+          >
+            {showPins ? <Eye size={16} /> : <EyeOff size={16} />}
+          </button>
+        )}
       </nav>
 
       {/* Pages Popover Modal */}

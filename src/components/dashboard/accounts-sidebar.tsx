@@ -13,9 +13,14 @@ import {
 interface SidebarProps {
   activeTab?: string;
   onTabChange?: (tab: string) => void;
+  className?: string;
 }
 
-export function AccountsSidebar({ activeTab, onTabChange }: SidebarProps) {
+export function AccountsSidebar({
+  activeTab,
+  onTabChange,
+  className = '',
+}: SidebarProps) {
   const pathname = usePathname();
 
   // Determine active tab automatically by route unless explicitly specified
@@ -62,7 +67,7 @@ export function AccountsSidebar({ activeTab, onTabChange }: SidebarProps) {
   return (
     <aside
       aria-label="Accounts Navigation"
-      className="flex h-auto w-full flex-row items-center justify-between rounded-2xl bg-white p-3 shadow-[0px_0px_4px_rgba(0,0,0,0.25)] md:h-[944px] md:w-[92px] md:flex-col md:rounded-[24px] md:py-5 md:px-3.5"
+      className={`flex h-auto w-full flex-row items-center justify-between rounded-2xl bg-white p-3 shadow-[0px_0px_4px_rgba(0,0,0,0.25)] md:h-full md:w-[92px] md:flex-col md:rounded-[24px] md:py-4 lg:md:py-5 md:px-3 lg:md:px-3.5 ${className}`}
     >
       {/* Top: Logo */}
       <div className="flex flex-col items-center">
@@ -84,7 +89,7 @@ export function AccountsSidebar({ activeTab, onTabChange }: SidebarProps) {
       {/* Center: Nav Items */}
       <nav
         aria-label="Main navigation"
-        className="flex flex-row items-center gap-2 overflow-x-auto md:flex-col md:gap-3"
+        className="flex flex-row items-center gap-2 overflow-x-auto md:flex-col md:gap-2 lg:md:gap-2.5 xl:md:gap-3"
       >
         {navItems.map((item) => {
           const Icon = item.icon;
@@ -98,13 +103,13 @@ export function AccountsSidebar({ activeTab, onTabChange }: SidebarProps) {
                 href={item.href}
                 aria-label={item.label}
                 aria-current={isActive ? 'page' : undefined}
-                className={`flex h-12 w-12 items-center justify-center rounded-2xl transition-all duration-200 focus-visible:outline-2 focus-visible:outline-brand md:h-16 md:w-16 ${
+                className={`flex h-11 w-11 items-center justify-center rounded-2xl transition-all duration-200 focus-visible:outline-2 focus-visible:outline-brand md:h-12 md:w-12 lg:h-14 lg:w-14 xl:h-16 xl:w-16 ${
                   isActive
                     ? 'bg-brand text-white shadow-sm'
                     : 'text-[#1A1C1D] hover:bg-subtle hover:text-brand'
                 }`}
               >
-                <Icon size={24} strokeWidth={1.8} />
+                <Icon size={22} className="lg:h-6 lg:w-6" strokeWidth={1.8} />
               </Link>
             );
           }
@@ -115,23 +120,23 @@ export function AccountsSidebar({ activeTab, onTabChange }: SidebarProps) {
               type="button"
               aria-label={item.label}
               onClick={() => onTabChange?.(item.id)}
-              className="flex h-12 w-12 items-center justify-center rounded-2xl text-[#1A1C1D] transition-all duration-200 hover:bg-subtle hover:text-brand focus-visible:outline-2 focus-visible:outline-brand md:h-16 md:w-16"
+              className="flex h-11 w-11 items-center justify-center rounded-2xl text-[#1A1C1D] transition-all duration-200 hover:bg-subtle hover:text-brand focus-visible:outline-2 focus-visible:outline-brand md:h-12 md:w-12 lg:h-14 lg:w-14 xl:h-16 xl:w-16"
             >
-              <Icon size={24} strokeWidth={1.8} />
+              <Icon size={22} className="lg:h-6 lg:w-6" strokeWidth={1.8} />
             </button>
           );
         })}
       </nav>
 
       {/* Bottom: Logout and Avatar */}
-      <div className="flex flex-row items-center gap-3 md:flex-col md:gap-6">
+      <div className="flex flex-row items-center gap-2.5 md:flex-col md:gap-3 lg:md:gap-4 xl:md:gap-5">
         <button
           type="button"
           aria-label="Logout"
-          className="flex h-12 w-12 items-center justify-center rounded-2xl text-[#1A1C1D] transition-colors hover:bg-subtle hover:text-danger focus-visible:outline-2 focus-visible:outline-brand md:h-14 md:w-14"
+          className="flex h-11 w-11 items-center justify-center rounded-2xl text-[#1A1C1D] transition-colors hover:bg-subtle hover:text-danger focus-visible:outline-2 focus-visible:outline-brand md:h-11 md:w-11 lg:h-12 lg:w-12 xl:h-14 xl:w-14"
           onClick={() => alert('Logout action (preview)')}
         >
-          <LogOut size={22} strokeWidth={1.8} />
+          <LogOut size={20} className="lg:h-[22px] lg:w-[22px]" strokeWidth={1.8} />
         </button>
 
         <div className="relative">
@@ -140,7 +145,7 @@ export function AccountsSidebar({ activeTab, onTabChange }: SidebarProps) {
             width={52}
             height={52}
             alt="Bhargav profile"
-            className="h-11 w-11 rounded-full object-cover ring-2 ring-transparent transition-transform hover:scale-105 hover:ring-brand md:h-[56px] md:w-[56px]"
+            className="h-10 w-10 rounded-full object-cover ring-2 ring-transparent transition-transform hover:scale-105 hover:ring-brand md:h-11 md:w-11 lg:h-12 lg:w-12 xl:h-[50px] xl:w-[50px]"
           />
         </div>
       </div>

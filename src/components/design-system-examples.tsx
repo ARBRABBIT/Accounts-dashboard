@@ -43,6 +43,23 @@ export function DesignSystemExamples() {
     <Example title="13 · Interaction & responsive rules" description="A consistent contract for every screen built with this system.">
       <div className="grid gap-6 text-sm leading-7 text-muted sm:grid-cols-2"><div><p className="font-bold text-ink">States and accessibility</p><p>Hover: subtle surface or darker brand. Focus: 3px brand outline with 4px offset. Disabled actions: 30% opacity. Invalid fields: danger border with associated message. Dialogs use unique accessible titles. Numeric columns align right and use tabular figures.</p></div><div><p className="font-bold text-ink">Layout and motion</p><p>Maximum page width: 1440px. Desktop gutters: 62px; tablet: 32px at 1100px; mobile: 20px at 640px. Tables keep a 640px minimum width and scroll within their container. Keep 100–110px bottom space for floating navigation. GSAP entrance: 450ms, 60ms stagger; reduced motion disables animation.</p></div></div>
     </Example>
+    <Example title="14 · Contextual comments (Figma style)" description="Contextual on-screen commenting system. Pins are anchored to document coordinates, scoped strictly to the current URL route, and persisted in browser LocalStorage until deleted.">
+      <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between rounded-2xl border border-line bg-subtle p-5">
+        <div className="flex items-center gap-4">
+          <div className="relative flex h-8 w-8 items-center justify-center rounded-full rounded-bl-[3px] border-2 border-white bg-brand text-xs font-bold text-white shadow-md">
+            1
+          </div>
+          <div>
+            <p className="text-sm font-bold text-ink">Teardrop numbered comment pin</p>
+            <p className="text-xs text-muted">Press &apos;C&apos; or use the bottom navigation pill to toggle comment mode. Click anywhere to drop a pin.</p>
+          </div>
+        </div>
+        <div className="flex items-center gap-2">
+          <span className="rounded-full bg-brand/10 px-3 py-1 text-xs font-semibold text-brand">Route-scoped</span>
+          <span className="rounded-full bg-line px-3 py-1 text-xs font-semibold text-muted">LocalStorage persisted</span>
+        </div>
+      </div>
+    </Example>
   </div>;
 }
 function Example({title,description,children}:{title:string;description:string;children:React.ReactNode}) {

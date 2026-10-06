@@ -18,20 +18,20 @@ export function AccountsHeader({
   const [showNotifications, setShowNotifications] = useState(false);
 
   return (
-    <header className="flex flex-col justify-between gap-4 md:flex-row md:items-center">
+    <header className="flex flex-col justify-between gap-3 md:flex-row md:items-center">
       <div>
-        <h1 className="text-[28px] font-semibold leading-[1.1] text-black">
+        <h1 className="text-[22px] sm:text-[24px] lg:text-[26px] xl:text-[28px] font-semibold leading-[1.1] text-black">
           {title}
         </h1>
-        <p className="mt-1.5 text-base font-medium text-[#524F4F] md:text-lg">
+        <p className="mt-0.5 sm:mt-1 text-xs sm:text-sm lg:text-[15px] xl:text-base font-medium text-[#524F4F]">
           {subtitle}
         </p>
       </div>
 
       <div className="flex items-center gap-2 sm:gap-3">
         {/* Search bar */}
-        <div className="relative flex h-[52px] w-full items-center rounded-full bg-white px-5 shadow-xs transition-shadow focus-within:ring-2 focus-within:ring-brand/40 sm:w-[295px]">
-          <Search size={22} className="shrink-0 text-[#5C5C5C]" />
+        <div className="relative flex h-[44px] sm:h-[48px] xl:h-[52px] w-full items-center rounded-full bg-white px-4 sm:px-5 shadow-xs transition-shadow focus-within:ring-2 focus-within:ring-brand/40 sm:w-[260px] lg:w-[295px]">
+          <Search size={20} className="shrink-0 text-[#5C5C5C]" />
           <input
             type="search"
             value={query}
@@ -41,7 +41,7 @@ export function AccountsHeader({
             }}
             placeholder="Search leads..."
             aria-label="Search leads"
-            className="w-full bg-transparent pl-3 text-base text-ink placeholder-[#5C5C5C] focus:outline-none"
+            className="w-full bg-transparent pl-2.5 sm:pl-3 text-sm lg:text-base text-ink placeholder-[#5C5C5C] focus:outline-none"
           />
         </div>
 
@@ -54,11 +54,11 @@ export function AccountsHeader({
               setShowNotifications((prev) => !prev);
               setHasUnread(false);
             }}
-            className="relative flex h-[52px] w-[52px] items-center justify-center rounded-full bg-white shadow-xs transition-transform hover:scale-105 hover:bg-subtle focus-visible:outline-2 focus-visible:outline-brand"
+            className="relative flex h-[44px] w-[44px] sm:h-[48px] sm:w-[48px] xl:h-[52px] xl:w-[52px] items-center justify-center rounded-full bg-white shadow-xs transition-transform hover:scale-105 hover:bg-subtle focus-visible:outline-2 focus-visible:outline-brand"
           >
-            <Bell size={22} className="text-[#2C2C2C]" strokeWidth={1.8} />
+            <Bell size={20} className="text-[#2C2C2C]" strokeWidth={1.8} />
             {hasUnread && (
-              <span className="absolute top-3.5 right-3.5 h-[7px] w-[7px] rounded-full bg-[#EF4646] ring-2 ring-white" />
+              <span className="absolute top-3 right-3 sm:top-3.5 sm:right-3.5 h-[7px] w-[7px] rounded-full bg-[#EF4646] ring-2 ring-white" />
             )}
           </button>
 

@@ -88,24 +88,24 @@ export default function CreditsManagementPage() {
   return (
     <div
       ref={containerRef}
-      className="min-h-screen w-full overflow-x-hidden bg-[#F2F2F2] p-4 sm:p-6 md:p-8 lg:p-9"
+      className="min-h-screen md:h-screen md:max-h-screen w-full bg-[#F2F2F2] p-3 sm:p-4 md:p-5 lg:p-6 md:overflow-hidden flex flex-col justify-center font-sans"
     >
-      <div className="mx-auto flex w-full max-w-[1440px] flex-col gap-6 md:flex-row md:items-start md:gap-7 lg:gap-8">
+      <div className="mx-auto flex w-full max-w-[1440px] flex-1 flex-col gap-3 md:flex-row md:items-stretch md:gap-6 lg:gap-7 min-h-0">
         {/* Left Persistent Sidebar with 5th tab active */}
-        <div className="shrink-0 md:sticky md:top-8">
+        <div className="shrink-0 flex flex-col md:w-[92px] md:h-full">
           <AccountsSidebar activeTab="credits" />
         </div>
 
         {/* Main Content Area */}
-        <main className="flex min-w-0 flex-1 flex-col gap-7">
+        <main className="flex min-w-0 flex-1 flex-col justify-between gap-3 md:gap-3.5 lg:gap-4 min-h-0">
           {/* Top Frame: Title, Subtitle, Search, Notifications */}
-          <div className="credits-header-anim flex flex-col justify-between gap-5 sm:flex-row sm:items-center">
+          <div className="credits-header-anim shrink-0 flex flex-col justify-between gap-3 sm:flex-row sm:items-center">
             {/* Title & Description */}
-            <div className="flex flex-col gap-2">
-              <h1 className="text-[28px] font-semibold leading-[110%] tracking-tight text-black">
+            <div className="flex flex-col gap-0.5 sm:gap-1">
+              <h1 className="text-[22px] sm:text-[24px] lg:text-[26px] xl:text-[28px] font-semibold leading-[110%] tracking-tight text-black">
                 Credits Management
               </h1>
-              <p className="text-[15px] font-normal leading-[22px] text-[#46464A]">
+              <p className="text-xs sm:text-sm lg:text-[15px] font-normal leading-[20px] text-[#46464A]">
                 Track and authorize earnings for your field agent network.
               </p>
             </div>
@@ -113,8 +113,8 @@ export default function CreditsManagementPage() {
             {/* Search Section & Notifications Container */}
             <div className="flex items-center gap-2 self-start sm:self-auto">
               {/* Search Container */}
-              <div className="flex h-[52px] w-full items-center gap-2 rounded-[60px] border border-black/5 bg-white px-5 shadow-xs transition focus-within:border-brand/40 focus-within:ring-2 focus-within:ring-brand/10 sm:w-[295px]">
-                <Search size={20} className="shrink-0 text-[#5C5C5C]" />
+              <div className="flex h-[44px] sm:h-[48px] xl:h-[52px] w-full items-center gap-2 rounded-[60px] border border-black/5 bg-white px-4 sm:px-5 shadow-xs transition focus-within:border-brand/40 focus-within:ring-2 focus-within:ring-brand/10 sm:w-[260px] lg:w-[295px]">
+                <Search size={18} className="shrink-0 text-[#5C5C5C]" />
                 <input
                   type="search"
                   value={searchQuery}
@@ -127,7 +127,7 @@ export default function CreditsManagementPage() {
                       ? 'Search agents by name, ID, or location'
                       : 'Search users by name, ID, or location'
                   }
-                  className="w-full bg-transparent text-[16px] font-normal text-black placeholder:text-[#5C5C5C] focus:outline-none"
+                  className="w-full bg-transparent text-sm lg:text-base font-normal text-black placeholder:text-[#5C5C5C] focus:outline-none"
                 />
               </div>
 
@@ -135,12 +135,12 @@ export default function CreditsManagementPage() {
               <button
                 type="button"
                 aria-label="Notifications"
-                className="relative flex h-[52px] w-[52px] shrink-0 items-center justify-center rounded-[40px] border border-black/5 bg-white shadow-xs transition hover:bg-neutral-50 focus-visible:outline-2 focus-visible:outline-brand cursor-pointer"
+                className="relative flex h-[44px] w-[44px] sm:h-[48px] sm:w-[48px] xl:h-[52px] xl:w-[52px] shrink-0 items-center justify-center rounded-[40px] border border-black/5 bg-white shadow-xs transition hover:bg-neutral-50 focus-visible:outline-2 focus-visible:outline-brand cursor-pointer"
                 onClick={() => alert('No new notifications')}
               >
-                <Bell size={22} className="text-[#2C2C2C]" />
+                <Bell size={20} className="text-[#2C2C2C]" />
                 <span
-                  className="absolute right-[17px] top-[15px] h-[7px] w-[7px] rounded-full bg-[#EF4646] ring-2 ring-white"
+                  className="absolute right-[14px] top-[13px] sm:right-[16px] sm:top-[14px] h-[7px] w-[7px] rounded-full bg-[#EF4646] ring-2 ring-white"
                   aria-hidden="true"
                 />
               </button>
@@ -148,11 +148,11 @@ export default function CreditsManagementPage() {
           </div>
 
           {/* Filter Pills Capsule: Agents & Users */}
-          <div className="credits-header-anim flex items-center">
+          <div className="credits-header-anim shrink-0 flex items-center">
             <div
               role="tablist"
               aria-label="Filter credits by account type"
-              className="inline-flex items-center gap-1.5 rounded-full border border-black/5 bg-white p-1.5 shadow-[0px_4px_24px_rgba(0,0,0,0.04)]"
+              className="inline-flex items-center gap-1 rounded-full border border-black/5 bg-white p-1 shadow-[0px_4px_24px_rgba(0,0,0,0.04)]"
             >
               {(['Agents', 'Users'] as const).map((tab) => {
                 const isActive = activeTab === tab;
@@ -165,7 +165,7 @@ export default function CreditsManagementPage() {
                     aria-selected={isActive}
                     type="button"
                     onClick={() => setActiveTab(tab)}
-                    className={`rounded-full px-6 py-2 text-sm font-semibold transition-all duration-200 focus-visible:outline-2 focus-visible:outline-brand cursor-pointer ${
+                    className={`rounded-full px-5 py-1.5 text-xs sm:text-sm font-semibold transition-all duration-200 focus-visible:outline-2 focus-visible:outline-brand cursor-pointer ${
                       isActive
                         ? 'bg-[#2780C4] text-white shadow-xs'
                         : 'text-[#6B7280] hover:bg-subtle hover:text-[#1A1C1D]'
@@ -186,9 +186,9 @@ export default function CreditsManagementPage() {
           </div>
 
           {/* Table Content */}
-          <div className="credits-content-anim">
+          <div className="credits-content-anim flex-1 min-h-0 flex flex-col">
             {filteredItems.length === 0 ? (
-              <div className="flex flex-col items-center justify-center rounded-[28px] border border-dashed border-line bg-white/70 py-16 text-center">
+              <div className="flex flex-1 flex-col items-center justify-center rounded-[28px] border border-dashed border-line bg-white/70 py-12 text-center">
                 <p className="text-base font-semibold text-ink">
                   No {activeTab.toLowerCase()} credit records found
                 </p>

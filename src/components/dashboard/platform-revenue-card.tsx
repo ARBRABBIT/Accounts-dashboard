@@ -124,14 +124,14 @@ export function PlatformRevenueCard() {
       onTouchStart={handlePressStart}
       onTouchEnd={handlePressEnd}
       onTouchCancel={handlePressEnd}
-      className={`relative flex min-h-[424px] w-full flex-col justify-between overflow-hidden rounded-[23px] bg-brand p-6 text-white shadow-sm sm:p-7 select-none transition-all duration-200 cursor-pointer ${
+      className={`relative flex h-full min-h-[300px] lg:min-h-0 w-full flex-col justify-between overflow-hidden rounded-[23px] bg-brand p-4 sm:p-5 lg:p-5 xl:p-6 text-white shadow-sm select-none transition-all duration-200 cursor-pointer ${
         isPressing ? 'scale-[0.985] ring-4 ring-white/30' : 'hover:shadow-md'
       }`}
     >
       {/* Top Header */}
       <div className="flex items-center justify-between gap-2">
         <div className="flex items-center gap-2">
-          <h2 className="text-[20px] font-semibold tracking-tight text-white">
+          <h2 className="text-[18px] sm:text-[20px] font-semibold tracking-tight text-white">
             Platform Revenue
           </h2>
 
@@ -160,25 +160,25 @@ export function PlatformRevenueCard() {
       </div>
 
       {/* Hero Metric Area */}
-      <div className="my-auto py-2">
-        <span className="text-[11px] font-bold uppercase tracking-[1.2px] text-white/75">
+      <div className="my-auto py-1 sm:py-2">
+        <span className="text-[10.5px] font-bold uppercase tracking-[1.2px] text-white/75">
           {currentSlide.label}
         </span>
-        <div className="mt-1 text-[54px] font-semibold leading-none tracking-tight text-white sm:text-[68px] lg:text-[74px] tabular-nums">
+        <div className="mt-0.5 text-[38px] sm:text-[46px] lg:text-[52px] xl:text-[64px] font-semibold leading-none tracking-tight text-white tabular-nums">
           {currentSlide.metric}
         </div>
 
-        <div className="mt-5 space-y-1.5 max-w-[380px]">
-          <p className="text-[17px] font-medium leading-[22px] text-white">
+        <div className="mt-2.5 sm:mt-3 space-y-1 max-w-[380px]">
+          <p className="text-[14px] sm:text-[15px] lg:text-[16px] font-medium leading-[20px] text-white">
             {currentSlide.headline}
           </p>
-          <p className="text-[13px] font-normal leading-[18px] text-white/85">
+          <p className="text-[12px] sm:text-[12.5px] font-normal leading-[17px] text-white/85 line-clamp-2">
             {currentSlide.description}
           </p>
         </div>
 
         {/* Subtle hint to guide users */}
-        <p className="mt-3 text-[11px] font-medium text-white/50 tracking-wide">
+        <p className="mt-1.5 sm:mt-2 text-[10.5px] font-medium text-white/50 tracking-wide">
           💡 Press & hold card or tap (i) to explain on screen
         </p>
       </div>

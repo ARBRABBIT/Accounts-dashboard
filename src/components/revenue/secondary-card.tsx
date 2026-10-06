@@ -55,19 +55,19 @@ export function SecondaryRevenueCard({ vertical }: SecondaryRevenueCardProps) {
         tabIndex={0}
         role="button"
         aria-label={`${vertical.name}: ${vertical.amount}`}
-        className="group relative flex h-[268px] sm:h-[275px] w-full cursor-pointer flex-col justify-between rounded-[24px] border border-[#E5E5EA] bg-white p-7 sm:p-8 shadow-xs transition-all duration-200 hover:-translate-y-1 hover:shadow-md focus-visible:outline-2 focus-visible:outline-brand"
+        className="group relative flex h-[142px] sm:h-[152px] w-full cursor-pointer flex-col justify-between rounded-[22px] sm:rounded-[24px] border border-[#E5E5EA] bg-white p-5 sm:p-6 shadow-xs transition-all duration-200 hover:-translate-y-0.5 hover:shadow-md focus-visible:outline-2 focus-visible:outline-brand"
       >
         {/* Top Icon Box */}
-        <div className="flex h-12 w-12 items-center justify-center rounded-[16px] bg-[#F4F8FC] transition-transform duration-200 group-hover:scale-105">
+        <div className="flex h-10 w-10 sm:h-11 sm:w-11 items-center justify-center rounded-[14px] bg-[#F4F8FC] transition-transform duration-200 group-hover:scale-105">
           {renderIcon()}
         </div>
 
         {/* Bottom Details */}
-        <div className="flex flex-col gap-1">
+        <div className="flex flex-col gap-0.5 sm:gap-1">
           <span className="text-[13px] font-bold tracking-[0.13px] text-[#46464A]">
             {vertical.name}
           </span>
-          <span className="text-[28px] sm:text-[32px] font-extrabold leading-none text-[#393B3F]">
+          <span className="text-[26px] sm:text-[28px] lg:text-[30px] font-extrabold leading-none text-[#393B3F]">
             {vertical.amount}
           </span>
         </div>

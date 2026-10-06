@@ -1,20 +1,57 @@
 'use client';
-import { useState } from 'react';
+import { useState, useMemo, useEffect } from 'react';
 import { recentActivityItems, RecentActivityItem } from '@/lib/revenue-management-data';
 import { Modal } from '@/components/ui/modal';
+import { Pagination } from '@/components/ui/pagination';
 
-export function RecentActivityTable() {
+interface RecentActivityTableProps {
+  searchQuery?: string;
+}
+
+export function RecentActivityTable({ searchQuery = '' }: RecentActivityTableProps) {
   const [selectedItem, setSelectedItem] = useState<RecentActivityItem | null>(null);
+  const [currentPage, setCurrentPage] = useState(1);
+  const pageSize = 6;
+
+  // Filter items based on search query
+  const filteredItems = useMemo(() => {
+    if (!searchQuery?.trim()) return recentActivityItems;
+    const q = searchQuery.toLowerCase().trim();
+    return recentActivityItems.filter(
+      (item) =>
+        item.leadName.toLowerCase().includes(q) ||
+        item.farmlandId.toLowerCase().includes(q) ||
+        item.amount.toLowerCase().includes(q) ||
+        item.status.toLowerCase().includes(q) ||
+        item.time.toLowerCase().includes(q)
+    );
+  }, [searchQuery]);
+
+  // Reset page on search change
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [searchQuery]);
+
+  // Slice paginated items
+  const paginatedItems = useMemo(() => {
+    const start = (currentPage - 1) * pageSize;
+    return filteredItems.slice(start, start + pageSize);
+  }, [filteredItems, currentPage, pageSize]);
 
   return (
     <section aria-labelledby="recent-activity-heading" className="w-full">
       {/* Section Title */}
-      <h2
-        id="recent-activity-heading"
-        className="mb-6 text-[30px] sm:text-[34px] font-semibold leading-[40px] tracking-[-0.9px] text-[#1A1C1D]"
-      >
-        Recent Activity
-      </h2>
+      <div className="mb-4 sm:mb-5 flex items-center justify-between">
+        <h2
+          id="recent-activity-heading"
+          className="text-[24px] sm:text-[28px] lg:text-[30px] font-semibold leading-[36px] tracking-[-0.6px] text-[#1A1C1D]"
+        >
+          Recent Activity
+        </h2>
+        <span className="text-xs sm:text-sm font-medium text-[#5E5E63]">
+          {filteredItems.length} {filteredItems.length === 1 ? 'record' : 'records'}
+        </span>
+      </div>
 
       {/* Elevated Table Container */}
       <div className="overflow-hidden rounded-[24px] border border-[#E5E5EA]/70 bg-white shadow-xs">
@@ -23,97 +60,116 @@ export function RecentActivityTable() {
           <table className="w-full min-w-[760px] text-left border-collapse">
             <thead>
               <tr className="border-b border-[#F2F2F2] bg-[#FAFBFD]/80 text-xs font-bold tracking-[0.5px] text-[#5E5E63] uppercase select-none">
-                <th scope="col" className="pl-7 pr-4 py-4">
+                <th scope="col" className="pl-7 pr-4 py-3.5">
                   Lead Name
                 </th>
-                <th scope="col" className="px-4 py-4">
+                <th scope="col" className="px-4 py-3.5">
                   Farmland ID
                 </th>
-                <th scope="col" className="px-4 py-4">
+                <th scope="col" className="px-4 py-3.5">
                   Time
                 </th>
-                <th scope="col" className="px-4 py-4">
+                <th scope="col" className="px-4 py-3.5">
                   Amount
                 </th>
-                <th scope="col" className="px-4 py-4">
+                <th scope="col" className="px-4 py-3.5">
                   Status
                 </th>
-                <th scope="col" className="px-4 py-4">
+                <th scope="col" className="px-4 py-3.5">
                   Published Time
                 </th>
-                <th scope="col" className="pr-7 pl-4 py-4 text-right">
+                <th scope="col" className="pr-7 pl-4 py-3.5 text-right">
                   Action
                 </th>
               </tr>
             </thead>
 
             <tbody className="divide-y divide-[#F2F2F2]">
-              {recentActivityItems.map((item) => (
-                <tr
-                  key={item.id}
-                  className="h-[81px] transition-colors hover:bg-subtle/60"
-                >
-                  {/* Lead Name with avatar */}
-                  <td className="pl-7 pr-4 py-3">
-                    <div className="flex items-center gap-3.5">
-                      <img
-                        src={item.avatarUrl}
-                        alt=""
-                        aria-hidden="true"
-                        className="h-[35px] w-[35px] rounded-full object-cover ring-1 ring-black/5"
-                      />
-                      <span className="text-[12.3px] font-semibold text-[#1A1C1D]">
-                        {item.leadName}
-                      </span>
-                    </div>
-                  </td>
-
-                  {/* Farmland ID */}
-                  <td className="px-4 py-3 text-[12.3px] text-[#3D4949]">
-                    {item.farmlandId}
-                  </td>
-
-                  {/* Time */}
-                  <td className="px-4 py-3 text-[12.3px] text-[#3D4949]">
-                    {item.time}
-                  </td>
-
-                  {/* Amount */}
-                  <td className="px-4 py-3 text-[12.3px] font-semibold text-[#1D5E9C]">
-                    {item.amount}
-                  </td>
-
-                  {/* Status Badge */}
-                  <td className="px-4 py-3">
-                    <span className="inline-flex items-center rounded-full bg-[#3C78B9] px-3 py-1 text-[10.5px] font-semibold text-white">
-                      {item.status}
-                    </span>
-                  </td>
-
-                  {/* Published Time */}
-                  <td className="px-4 py-3 text-[12.3px] text-[#3D4949]">
-                    {item.publishedTime}
-                  </td>
-
-                  {/* Action View Button */}
-                  <td className="pr-7 pl-4 py-3 text-right">
-                    <button
-                      type="button"
-                      onClick={() => setSelectedItem(item)}
-                      className={`inline-flex items-center justify-center rounded-full px-4 py-1.5 text-[10.5px] font-bold uppercase tracking-[0.53px] transition-transform hover:scale-105 focus-visible:outline-2 focus-visible:outline-brand ${
-                        item.actionVariant === 'soft'
-                          ? 'bg-[#96C9ED] text-[#000000] hover:bg-[#86bde3]'
-                          : 'bg-[#2780C4] text-white hover:bg-brand/90'
-                      }`}
-                    >
-                      VIEW
-                    </button>
+              {paginatedItems.length === 0 ? (
+                <tr>
+                  <td colSpan={7} className="py-12 text-center text-sm text-[#5E5E63]">
+                    No recent activity records found matching &ldquo;{searchQuery}&rdquo;
                   </td>
                 </tr>
-              ))}
+              ) : (
+                paginatedItems.map((item) => (
+                  <tr
+                    key={item.id}
+                    className="h-[68px] sm:h-[72px] transition-colors hover:bg-subtle/60"
+                  >
+                    {/* Lead Name with avatar */}
+                    <td className="pl-7 pr-4 py-3">
+                      <div className="flex items-center gap-3.5">
+                        <img
+                          src={item.avatarUrl}
+                          alt=""
+                          aria-hidden="true"
+                          className="h-[36px] w-[36px] rounded-full object-cover ring-1 ring-black/5"
+                        />
+                        <span className="text-[13px] font-semibold text-[#1A1C1D]">
+                          {item.leadName}
+                        </span>
+                      </div>
+                    </td>
+
+                    {/* Farmland ID */}
+                    <td className="px-4 py-3 text-[12.5px] font-medium text-[#3D4949]">
+                      {item.farmlandId}
+                    </td>
+
+                    {/* Time */}
+                    <td className="px-4 py-3 text-[12.5px] text-[#3D4949]">
+                      {item.time}
+                    </td>
+
+                    {/* Amount */}
+                    <td className="px-4 py-3 text-[12.5px] font-semibold text-[#1D5E9C]">
+                      {item.amount}
+                    </td>
+
+                    {/* Status Badge */}
+                    <td className="px-4 py-3">
+                      <span className="inline-flex items-center rounded-full bg-[#3C78B9] px-3 py-1 text-[10.5px] font-semibold text-white">
+                        {item.status}
+                      </span>
+                    </td>
+
+                    {/* Published Time */}
+                    <td className="px-4 py-3 text-[12.5px] text-[#3D4949]">
+                      {item.publishedTime}
+                    </td>
+
+                    {/* Action View Button */}
+                    <td className="pr-7 pl-4 py-3 text-right">
+                      <button
+                        type="button"
+                        onClick={() => setSelectedItem(item)}
+                        className={`inline-flex items-center justify-center rounded-full px-4 py-1.5 text-[10.5px] font-bold uppercase tracking-[0.53px] transition-transform hover:scale-105 focus-visible:outline-2 focus-visible:outline-brand cursor-pointer ${
+                          item.actionVariant === 'soft'
+                            ? 'bg-[#96C9ED] text-[#000000] hover:bg-[#86bde3]'
+                            : 'bg-[#2780C4] text-white hover:bg-brand/90'
+                        }`}
+                      >
+                        VIEW
+                      </button>
+                    </td>
+                  </tr>
+                ))
+              )}
             </tbody>
           </table>
         </div>
+
+        {/* Pagination Footer */}
+        {filteredItems.length > pageSize && (
+          <Pagination
+            total={filteredItems.length}
+            page={currentPage}
+            pageSize={pageSize}
+            onPageChange={setCurrentPage}
+            itemLabel="activities"
+          />
+        )}
       </div>
 
       {selectedItem && (

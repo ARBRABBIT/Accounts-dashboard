@@ -54,11 +54,11 @@ export function AccountsCreditsCard() {
   return (
     <article
       aria-label="Accounts Credits usage"
-      className="relative flex min-h-[401px] w-full flex-col justify-between rounded-[22px] bg-white p-6 shadow-panel sm:p-7"
+      className="relative flex h-full min-h-[290px] lg:min-h-0 w-full flex-col justify-between rounded-[22px] bg-white p-4 sm:p-5 lg:p-5 xl:p-6 shadow-panel"
     >
       {/* Top Header */}
       <div className="flex items-center justify-between gap-2">
-        <h2 className="text-[21.9px] font-medium tracking-tight text-ink">
+        <h2 className="text-[18px] sm:text-[20px] lg:text-[21.9px] font-medium tracking-tight text-ink">
           Accounts Credits
         </h2>
         <PillDropdown
@@ -70,8 +70,8 @@ export function AccountsCreditsCard() {
       </div>
 
       {/* Speedometer Radial Gauge */}
-      <div className="relative my-auto flex flex-col items-center justify-center">
-        <div className="relative h-[165px] w-[330px]">
+      <div className="relative my-auto flex flex-col items-center justify-center py-1 sm:py-2">
+        <div className="relative h-[125px] sm:h-[135px] xl:h-[160px] w-full max-w-[270px] sm:max-w-[290px] xl:max-w-[320px]">
           <svg viewBox="0 0 330 165" className="h-full w-full overflow-visible">
             <defs>
               <linearGradient id="activeTickGrad" x1="0%" y1="100%" x2="100%" y2="0%">
@@ -116,8 +116,8 @@ export function AccountsCreditsCard() {
           </svg>
 
           {/* Center Metric */}
-          <div className="absolute inset-x-0 bottom-1 flex flex-col items-center justify-center">
-            <span className="text-[40px] font-semibold tracking-[-0.02em] text-[#5A5C5E]">
+          <div className="absolute inset-x-0 bottom-0 flex flex-col items-center justify-center">
+            <span className="text-[32px] sm:text-[36px] xl:text-[40px] font-semibold tracking-[-0.02em] text-[#5A5C5E]">
               {total}
             </span>
           </div>
@@ -125,23 +125,23 @@ export function AccountsCreditsCard() {
       </div>
 
       {/* Bottom Metrics Details */}
-      <div className="flex items-center justify-around border-t border-line/60 pt-4">
+      <div className="flex items-center justify-around border-t border-line/60 pt-2.5 sm:pt-3.5">
         {/* Available Credits */}
         <div className="flex flex-col items-center text-center">
-          <span className="text-[26px] font-medium tracking-[-0.02em] text-[#2B82C5]">
+          <span className="text-[22px] sm:text-[24px] xl:text-[26px] font-medium tracking-[-0.02em] text-[#2B82C5]">
             {available}
           </span>
-          <span className="mt-0.5 text-[12px] font-medium tracking-[-0.02em] text-[#5A5C5E]">
+          <span className="mt-0.5 text-[11px] sm:text-[12px] font-medium tracking-[-0.02em] text-[#5A5C5E]">
             Available Credits
           </span>
         </div>
 
         {/* Vertical Divider */}
-        <div className="h-10 w-[1px] bg-black/15" />
+        <div className="h-8 sm:h-9 w-[1px] bg-black/15" />
 
         {/* Used Credits */}
         <div className="flex flex-col items-center text-center">
-          <span className="text-[26px] font-medium tracking-[-0.02em] text-[#2B82C5]">
+          <span className="text-[22px] sm:text-[24px] xl:text-[26px] font-medium tracking-[-0.02em] text-[#2B82C5]">
             {used}
           </span>
           <span className="mt-0.5 text-[12px] font-medium tracking-[-0.02em] text-[#5A5C5E]">

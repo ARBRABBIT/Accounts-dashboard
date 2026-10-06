@@ -46,39 +46,39 @@ export default function AccountsDashboardPage() {
   return (
     <div
       ref={containerRef}
-      className="min-h-screen w-full bg-[#f8f9fa] p-4 sm:p-6 md:p-8 lg:p-9"
+      className="min-h-screen md:h-screen md:max-h-screen w-full bg-[#f8f9fa] p-3 sm:p-4 md:p-5 lg:p-6 md:overflow-hidden flex flex-col justify-center"
     >
-      <div className="mx-auto flex max-w-[1440px] flex-col gap-6 md:flex-row md:items-start md:gap-7 lg:gap-8">
+      <div className="mx-auto flex w-full max-w-[1440px] flex-1 flex-col gap-3 md:flex-row md:items-stretch md:gap-6 lg:gap-7 min-h-0">
         {/* Left Sidebar */}
-        <div className="shrink-0 md:sticky md:top-8">
+        <div className="shrink-0 flex flex-col md:w-[92px] md:h-full">
           <AccountsSidebar />
         </div>
 
         {/* Main Content Area */}
-        <main className="flex flex-1 flex-col gap-6 lg:gap-7">
+        <main className="flex flex-1 flex-col justify-between gap-3 md:gap-3.5 lg:gap-4 min-h-0">
           {/* Top Header */}
-          <div className="dashboard-header-elem">
+          <div className="dashboard-header-elem shrink-0">
             <AccountsHeader />
           </div>
 
           {/* Cards Grid */}
-          <div className="flex flex-col gap-6 lg:gap-6">
+          <div className="flex flex-1 flex-col gap-3 md:gap-3.5 lg:gap-4 min-h-0">
             {/* Row 1: Platform Revenue (col-span-4) & Agent Commission Management (col-span-8) */}
-            <div className="grid grid-cols-1 gap-6 lg:grid-cols-12">
-              <div className="dashboard-card lg:col-span-4 xl:col-span-4 flex">
+            <div className="grid grid-cols-1 gap-3 md:gap-3.5 lg:gap-4 lg:grid-cols-12 flex-1 min-h-0">
+              <div className="dashboard-card lg:col-span-4 xl:col-span-4 flex min-h-0">
                 <PlatformRevenueCard />
               </div>
-              <div className="dashboard-card lg:col-span-8 xl:col-span-8 flex">
+              <div className="dashboard-card lg:col-span-8 xl:col-span-8 flex min-h-0">
                 <CommissionChartCard />
               </div>
             </div>
 
             {/* Row 2: Platform Collections Activity (col-span-7) & Accounts Credits (col-span-5) */}
-            <div className="grid grid-cols-1 gap-6 lg:grid-cols-12">
-              <div className="dashboard-card lg:col-span-7 xl:col-span-7 flex">
+            <div className="grid grid-cols-1 gap-3 md:gap-3.5 lg:gap-4 lg:grid-cols-12 flex-1 min-h-0">
+              <div className="dashboard-card lg:col-span-7 xl:col-span-7 flex min-h-0">
                 <PlatformCollectionsCard />
               </div>
-              <div className="dashboard-card lg:col-span-5 xl:col-span-5 flex">
+              <div className="dashboard-card lg:col-span-5 xl:col-span-5 flex min-h-0">
                 <AccountsCreditsCard />
               </div>
             </div>

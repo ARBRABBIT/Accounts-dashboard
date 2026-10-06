@@ -1,5 +1,5 @@
 'use client';
-import { useEffect, useRef } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import gsap from 'gsap';
 import { AccountsSidebar } from '@/components/dashboard/accounts-sidebar';
 import { AccountsHeader } from '@/components/dashboard/accounts-header';
@@ -9,6 +9,7 @@ import { secondaryRevenueVerticals } from '@/lib/revenue-management-data';
 
 export default function RevenueManagementPage() {
   const containerRef = useRef<HTMLDivElement>(null);
+  const [searchQuery, setSearchQuery] = useState('');
 
   useEffect(() => {
     if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
@@ -45,26 +46,27 @@ export default function RevenueManagementPage() {
   return (
     <div
       ref={containerRef}
-      className="min-h-screen w-full bg-[#f8f9fa] p-4 sm:p-6 md:p-8 lg:p-9"
+      className="min-h-screen w-full bg-[#f8f9fa] p-3 sm:p-4 md:p-5 lg:p-6"
     >
-      <div className="mx-auto flex max-w-[1440px] flex-col gap-6 md:flex-row md:items-start md:gap-7 lg:gap-8">
+      <div className="mx-auto flex w-full max-w-[1440px] flex-col gap-3 md:flex-row md:items-start md:gap-6 lg:gap-7">
         {/* Left Sidebar */}
-        <div className="shrink-0 md:sticky md:top-8">
+        <div className="shrink-0 flex flex-col md:w-[92px] md:sticky md:top-5 lg:md:top-6 md:h-[calc(100vh-3rem)]">
           <AccountsSidebar activeTab="compliance" />
         </div>
 
         {/* Main Content Area */}
-        <main className="flex flex-1 flex-col gap-8 lg:gap-9">
+        <main className="flex flex-1 flex-col gap-6 lg:gap-7">
           {/* Top Header */}
           <div className="revenue-header-elem">
             <AccountsHeader
               title="Revenue Management"
               subtitle="Overview of Financial performance and key metrics"
+              onSearch={setSearchQuery}
             />
           </div>
 
           {/* Top Revenue Verticals Section */}
-          <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3">
+          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
             {secondaryRevenueVerticals.map((vert) => (
               <div key={vert.id} className="revenue-card-item flex">
                 <SecondaryRevenueCard vertical={vert} />
@@ -74,7 +76,7 @@ export default function RevenueManagementPage() {
 
           {/* Recent Activity Table Section */}
           <div className="revenue-card-item w-full">
-            <RecentActivityTable />
+            <RecentActivityTable searchQuery={searchQuery} />
           </div>
         </main>
       </div>

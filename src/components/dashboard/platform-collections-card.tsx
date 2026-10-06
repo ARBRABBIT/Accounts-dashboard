@@ -87,19 +87,19 @@ export function PlatformCollectionsCard() {
       onTouchStart={handlePressStart}
       onTouchEnd={handlePressEnd}
       onTouchCancel={handlePressEnd}
-      className={`relative flex min-h-[401px] w-full flex-col justify-between overflow-hidden rounded-[32px] bg-white p-6 shadow-panel sm:p-7 select-none transition-all duration-200 cursor-pointer ${
+      className={`relative flex h-full min-h-[290px] lg:min-h-0 w-full flex-col justify-between overflow-hidden rounded-[24px] sm:rounded-[28px] lg:rounded-[32px] bg-white p-4 sm:p-5 lg:p-5 xl:p-6 shadow-panel select-none transition-all duration-200 cursor-pointer ${
         isPressing ? 'scale-[0.985] ring-4 ring-[#2780C4]/20' : 'hover:shadow-md'
       }`}
     >
       {/* Top Header */}
-      <div className="flex flex-wrap items-center justify-between gap-3">
-        <div className="flex flex-col gap-1">
+      <div className="flex flex-wrap items-center justify-between gap-2.5">
+        <div className="flex flex-col gap-0.5">
           <div className="flex items-center gap-2">
-            <h2 className="text-[22.6px] font-semibold tracking-tight text-ink">
+            <h2 className="text-[18px] sm:text-[20px] lg:text-[22px] font-semibold tracking-tight text-ink">
               Daily Inflow
             </h2>
-            <span className="hidden sm:inline-flex items-center gap-1 rounded-full bg-emerald-50 px-2.5 py-0.5 text-[11px] font-bold text-emerald-700">
-              <CheckCircle2 size={12} />
+            <span className="hidden sm:inline-flex items-center gap-1 rounded-full bg-emerald-50 px-2 py-0.5 text-[10.5px] font-bold text-emerald-700">
+              <CheckCircle2 size={11} />
               99.2% On Time
             </span>
 
@@ -197,13 +197,13 @@ export function PlatformCollectionsCard() {
       )}
 
       {/* Chart Canvas with Left Y-Axis Numbers */}
-      <div className="relative mt-4 flex w-full select-none items-end">
+      <div className="relative mt-2.5 sm:mt-4 flex w-full select-none items-end">
         {/* Left Y-Axis Scale Numbers */}
-        <div className="mb-8 flex h-[200px] w-10 shrink-0 flex-col justify-between pr-2 text-right sm:w-12 sm:pr-3">
+        <div className="mb-6 sm:mb-7 flex h-[140px] sm:h-[150px] xl:h-[185px] w-8 sm:w-10 shrink-0 flex-col justify-between pr-2 text-right sm:pr-3">
           {yAxisLabels.map((label) => (
             <span
               key={label}
-              className="text-[11.5px] font-medium leading-none text-ink/45 tabular-nums"
+              className="text-[10.5px] sm:text-[11.5px] font-medium leading-none text-ink/45 tabular-nums"
             >
               {label}
             </span>
@@ -213,7 +213,7 @@ export function PlatformCollectionsCard() {
         {/* Plot Area */}
         <div className="relative flex flex-1 flex-col justify-end">
           {/* Subtle Dashed Horizontal Grid Lines */}
-          <div className="pointer-events-none absolute inset-x-0 top-0 h-[200px] flex flex-col justify-between">
+          <div className="pointer-events-none absolute inset-x-0 top-0 h-[140px] sm:h-[150px] xl:h-[185px] flex flex-col justify-between">
             {yAxisLabels.map((label) => (
               <div
                 key={label}
@@ -223,7 +223,7 @@ export function PlatformCollectionsCard() {
           </div>
 
           {/* SVG Wave Chart */}
-          <div className="relative h-[200px] w-full">
+          <div className="relative h-[140px] sm:h-[150px] xl:h-[185px] w-full">
             <svg
               viewBox="0 0 600 200"
               className="h-full w-full overflow-visible"

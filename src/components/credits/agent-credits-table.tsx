@@ -25,44 +25,44 @@ export function AgentCreditsTable({
   const isUserTab = activeTab === 'Users';
 
   return (
-    <div className="w-full overflow-hidden rounded-[24px] border border-[#E5E5EA]/80 bg-white shadow-xs">
-      <div className="w-full overflow-x-auto">
+    <div className="w-full flex-1 min-h-0 flex flex-col justify-between overflow-hidden rounded-[24px] border border-[#E5E5EA]/80 bg-white shadow-xs">
+      <div className="w-full flex-1 min-h-0 overflow-x-auto overflow-y-auto">
         <table
           className="w-full min-w-full border-collapse text-left"
           aria-label={`${activeTab} Credits Management Table`}
         >
           <thead>
-            <tr className="border-b border-[#F2F2F2] bg-[#FAFBFD]/80 text-[11px] sm:text-xs font-bold tracking-[0.5px] text-[#5E5E63] uppercase select-none">
-              <th scope="col" className="px-3 sm:px-4 lg:px-5 py-4 whitespace-nowrap">
+            <tr className="border-b border-[#F2F2F2] bg-[#FAFBFD]/80 text-[11px] sm:text-xs font-bold tracking-[0.5px] text-[#5E5E63] uppercase select-none sticky top-0 z-10 backdrop-blur-xs">
+              <th scope="col" className="px-3 sm:px-4 lg:px-5 py-3 whitespace-nowrap">
                 {isUserTab ? 'User ID' : 'Agent ID'}
               </th>
-              <th scope="col" className="px-3 sm:px-4 lg:px-5 py-4 whitespace-nowrap">
+              <th scope="col" className="px-3 sm:px-4 lg:px-5 py-3 whitespace-nowrap">
                 {isUserTab ? 'User' : 'Agent'}
               </th>
-              <th scope="col" className="px-3 sm:px-4 lg:px-5 py-4 whitespace-nowrap">
+              <th scope="col" className="px-3 sm:px-4 lg:px-5 py-3 whitespace-nowrap">
                 Location
               </th>
               <th
                 scope="col"
-                className="px-3 sm:px-4 lg:px-5 py-4 text-right whitespace-nowrap"
+                className="px-3 sm:px-4 lg:px-5 py-3 text-right whitespace-nowrap"
               >
                 Total Credits
               </th>
               <th
                 scope="col"
-                className="px-3 sm:px-4 lg:px-5 py-4 text-right whitespace-nowrap"
+                className="px-3 sm:px-4 lg:px-5 py-3 text-right whitespace-nowrap"
               >
                 Credits Used
               </th>
               <th
                 scope="col"
-                className="px-3 sm:px-4 lg:px-5 py-4 text-right whitespace-nowrap"
+                className="px-3 sm:px-4 lg:px-5 py-3 text-right whitespace-nowrap"
               >
                 Cash Earned
               </th>
               <th
                 scope="col"
-                className="px-3 sm:px-4 lg:px-5 py-4 text-right whitespace-nowrap"
+                className="px-3 sm:px-4 lg:px-5 py-3 text-right whitespace-nowrap"
               >
                 Action
               </th>
@@ -75,25 +75,25 @@ export function AgentCreditsTable({
                 className="group transition-colors hover:bg-[#F8FAFC]"
               >
                 {/* ID */}
-                <td className="px-3 sm:px-4 lg:px-5 py-3.5 sm:py-4 whitespace-nowrap">
-                  <span className="inline-flex items-center rounded-lg bg-[#F1F5F9] px-2.5 py-1 text-xs font-bold text-[#00609A]">
+                <td className="px-3 sm:px-4 lg:px-5 py-2 sm:py-2.5 whitespace-nowrap">
+                  <span className="inline-flex items-center rounded-lg bg-[#F1F5F9] px-2 py-0.5 text-xs font-bold text-[#00609A]">
                     {agent.agentId}
                   </span>
                 </td>
 
                 {/* Avatar & Name */}
-                <td className="px-3 sm:px-4 lg:px-5 py-3.5 sm:py-4 whitespace-nowrap">
-                  <div className="flex items-center gap-3">
+                <td className="px-3 sm:px-4 lg:px-5 py-2 sm:py-2.5 whitespace-nowrap">
+                  <div className="flex items-center gap-2.5">
                     <img
                       src={agent.avatarUrl}
                       alt={agent.name}
-                      className="h-9 w-9 shrink-0 rounded-full object-cover ring-1 ring-black/5"
+                      className="h-8 w-8 shrink-0 rounded-full object-cover ring-1 ring-black/5"
                     />
                     <div>
                       <div className="font-bold text-[#191C1E] text-sm">
                         {agent.name}
                       </div>
-                      <div className="text-[11px] font-medium text-[#64748B]">
+                      <div className="text-[10.5px] font-medium text-[#64748B]">
                         {agent.role}
                       </div>
                     </div>
@@ -101,41 +101,41 @@ export function AgentCreditsTable({
                 </td>
 
                 {/* Location */}
-                <td className="px-3 sm:px-4 lg:px-5 py-3.5 sm:py-4 whitespace-nowrap">
-                  <div className="flex items-center gap-1.5">
-                    <MapPin size={13} className="shrink-0 text-[#00629E]" />
-                    <span className="font-bold text-[#45474C] text-xs uppercase tracking-tight">
+                <td className="px-3 sm:px-4 lg:px-5 py-2 sm:py-2.5 whitespace-nowrap">
+                  <div className="flex items-center gap-1">
+                    <MapPin size={12} className="shrink-0 text-[#00629E]" />
+                    <span className="font-bold text-[#45474C] text-[11px] uppercase tracking-tight">
                       {agent.location}
                     </span>
                   </div>
                 </td>
 
                 {/* Total Credits */}
-                <td className="px-3 sm:px-4 lg:px-5 py-3.5 sm:py-4 text-right font-extrabold tabular-nums text-sm text-[#091426] whitespace-nowrap">
+                <td className="px-3 sm:px-4 lg:px-5 py-2 sm:py-2.5 text-right font-extrabold tabular-nums text-sm text-[#091426] whitespace-nowrap">
                   {agent.totalCredits}
                 </td>
 
                 {/* Credits Used */}
-                <td className="px-3 sm:px-4 lg:px-5 py-3.5 sm:py-4 text-right font-semibold tabular-nums text-sm text-[#46464A] whitespace-nowrap">
+                <td className="px-3 sm:px-4 lg:px-5 py-2 sm:py-2.5 text-right font-semibold tabular-nums text-sm text-[#46464A] whitespace-nowrap">
                   {agent.creditsUsed}
                 </td>
 
                 {/* Cash Earned */}
-                <td className="px-3 sm:px-4 lg:px-5 py-3.5 sm:py-4 text-right font-bold tabular-nums text-sm whitespace-nowrap">
+                <td className="px-3 sm:px-4 lg:px-5 py-2 sm:py-2.5 text-right font-bold tabular-nums text-sm whitespace-nowrap">
                   <span className="bg-gradient-to-r from-[#2780C4] to-[#154B73] bg-clip-text text-transparent">
                     {agent.formattedCashEarned}
                   </span>
                 </td>
 
                 {/* Action button: Details -> */}
-                <td className="px-3 sm:px-4 lg:px-5 py-3.5 sm:py-4 text-right whitespace-nowrap">
+                <td className="px-3 sm:px-4 lg:px-5 py-2 sm:py-2.5 text-right whitespace-nowrap">
                   <button
                     type="button"
                     onClick={() => onView(agent)}
-                    className="inline-flex items-center gap-1.5 rounded-full bg-[#2780C4] px-4 py-1.5 text-xs font-bold text-white shadow-xs transition hover:bg-[#1f6da9] hover:shadow-sm active:scale-95 focus-visible:outline-2 focus-visible:outline-brand cursor-pointer"
+                    className="inline-flex items-center gap-1 rounded-full bg-[#2780C4] px-3.5 py-1 text-xs font-bold text-white shadow-xs transition hover:bg-[#1f6da9] hover:shadow-sm active:scale-95 focus-visible:outline-2 focus-visible:outline-brand cursor-pointer"
                   >
                     <span>Details</span>
-                    <ArrowRight size={13} />
+                    <ArrowRight size={12} />
                   </button>
                 </td>
               </tr>

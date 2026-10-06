@@ -1,6 +1,8 @@
 import type { Metadata } from 'next';
 import './globals.css';
 import { FloatingNavigation } from '@/components/floating-navigation';
+import { CommentProvider } from '@/components/comments/comment-context';
+import { CommentOverlay } from '@/components/comments/comment-overlay';
 
 export const metadata: Metadata = {
   title: 'GLC · Accounts Dashboard',
@@ -14,9 +16,12 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en">
-      <body className="font-sans antialiased">
-        {children}
-        <FloatingNavigation />
+      <body className="font-sans antialiased relative min-h-screen">
+        <CommentProvider>
+          {children}
+          <CommentOverlay />
+          <FloatingNavigation />
+        </CommentProvider>
       </body>
     </html>
   );

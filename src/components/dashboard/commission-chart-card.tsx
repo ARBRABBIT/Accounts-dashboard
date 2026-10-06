@@ -17,21 +17,21 @@ export function CommissionChartCard() {
   return (
     <article
       aria-label="Agent Commission Management"
-      className="relative flex min-h-[424px] w-full flex-col justify-between overflow-hidden rounded-[23px] border border-white bg-white p-6 shadow-panel sm:p-7"
+      className="relative flex h-full min-h-[300px] lg:min-h-0 w-full flex-col justify-between overflow-hidden rounded-[23px] border border-white bg-white p-4 sm:p-5 lg:p-5 xl:p-6 shadow-panel"
     >
       {/* Top Header */}
-      <div className="flex flex-wrap items-center justify-between gap-3">
+      <div className="flex flex-wrap items-center justify-between gap-2.5">
         <div>
-          <h2 className="text-[21.7px] font-semibold tracking-tight text-ink">
+          <h2 className="text-[18px] sm:text-[20px] lg:text-[21.7px] font-semibold tracking-tight text-ink">
             Agent Commission Management
           </h2>
           {/* Legend */}
-          <div className="mt-2 flex items-center gap-5 text-sm text-ink">
-            <div className="flex items-center gap-2">
+          <div className="mt-1 sm:mt-1.5 flex items-center gap-4 text-xs sm:text-sm text-ink">
+            <div className="flex items-center gap-1.5">
               <span className="h-2 w-2 rounded-full bg-[#398DCC]" />
               <span>Paid</span>
             </div>
-            <div className="flex items-center gap-2">
+            <div className="flex items-center gap-1.5">
               <span
                 className="h-2.5 w-2.5 rounded-full"
                 style={{
@@ -53,13 +53,13 @@ export function CommissionChartCard() {
       </div>
 
       {/* Chart Canvas */}
-      <div className="relative mt-6 flex w-full select-none items-end">
+      <div className="relative mt-2.5 sm:mt-4 lg:mt-5 flex w-full select-none items-end">
         {/* Left Y-Axis Column (Fixed within card padding, never overflows) */}
-        <div className="mb-8 flex h-[200px] w-12 shrink-0 flex-col justify-between pr-2.5 text-right sm:w-14 sm:pr-3">
+        <div className="mb-6 sm:mb-7 flex h-[145px] sm:h-[155px] xl:h-[185px] w-10 sm:w-12 shrink-0 flex-col justify-between pr-2 text-right sm:pr-3">
           {commissionYAxis.map((label) => (
             <span
               key={label}
-              className="text-[11.3px] leading-none text-ink/50"
+              className="text-[10.5px] sm:text-[11.3px] leading-none text-ink/50"
             >
               {label}
             </span>
@@ -69,7 +69,7 @@ export function CommissionChartCard() {
         {/* Plot Area */}
         <div className="relative flex flex-1 flex-col justify-end">
           {/* Dashed Horizontal Grid Lines matching Y-axis exactly */}
-          <div className="pointer-events-none absolute inset-x-0 top-0 h-[200px] flex flex-col justify-between">
+          <div className="pointer-events-none absolute inset-x-0 top-0 h-[145px] sm:h-[155px] xl:h-[185px] flex flex-col justify-between">
             {commissionYAxis.map((label) => (
               <div
                 key={label}
