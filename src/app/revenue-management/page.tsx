@@ -1,0 +1,83 @@
+'use client';
+import { useEffect, useRef } from 'react';
+import gsap from 'gsap';
+import { AccountsSidebar } from '@/components/dashboard/accounts-sidebar';
+import { AccountsHeader } from '@/components/dashboard/accounts-header';
+import { SecondaryRevenueCard } from '@/components/revenue/secondary-card';
+import { RecentActivityTable } from '@/components/revenue/recent-activity-table';
+import { secondaryRevenueVerticals } from '@/lib/revenue-management-data';
+
+export default function RevenueManagementPage() {
+  const containerRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+
+    const ctx = gsap.context(() => {
+      gsap.fromTo(
+        '.revenue-card-item',
+        { y: 16, opacity: 0 },
+        {
+          y: 0,
+          opacity: 1,
+          duration: 0.45,
+          stagger: 0.08,
+          ease: 'power2.out',
+          clearProps: 'all',
+        }
+      );
+      gsap.fromTo(
+        '.revenue-header-elem',
+        { y: -10, opacity: 0 },
+        {
+          y: 0,
+          opacity: 1,
+          duration: 0.4,
+          ease: 'power2.out',
+          clearProps: 'all',
+        }
+      );
+    }, containerRef);
+
+    return () => ctx.revert();
+  }, []);
+
+  return (
+    <div
+      ref={containerRef}
+      className="min-h-screen w-full bg-[#f8f9fa] p-4 sm:p-6 md:p-8 lg:p-9"
+    >
+      <div className="mx-auto flex max-w-[1440px] flex-col gap-6 md:flex-row md:items-start md:gap-7 lg:gap-8">
+        {/* Left Sidebar */}
+        <div className="shrink-0 md:sticky md:top-8">
+          <AccountsSidebar activeTab="compliance" />
+        </div>
+
+        {/* Main Content Area */}
+        <main className="flex flex-1 flex-col gap-8 lg:gap-9">
+          {/* Top Header */}
+          <div className="revenue-header-elem">
+            <AccountsHeader
+              title="Revenue Management"
+              subtitle="Overview of Financial performance and key metrics"
+            />
+          </div>
+
+          {/* Top Revenue Verticals Section */}
+          <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3">
+            {secondaryRevenueVerticals.map((vert) => (
+              <div key={vert.id} className="revenue-card-item flex">
+                <SecondaryRevenueCard vertical={vert} />
+              </div>
+            ))}
+          </div>
+
+          {/* Recent Activity Table Section */}
+          <div className="revenue-card-item w-full">
+            <RecentActivityTable />
+          </div>
+        </main>
+      </div>
+    </div>
+  );
+}

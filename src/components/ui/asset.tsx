@@ -1,0 +1,1 @@
+export function Asset({name,width,height}:{name:string;width:number;height:number}) { return <img src={`/assets/${name}.svg`} width={width} height={height} alt="" aria-hidden="true" className="shrink-0"/>; }
