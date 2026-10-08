@@ -13,6 +13,7 @@ import {
   CURRENT_USER,
   loadCommentsFromStorage,
   saveCommentsToStorage,
+  moveToTrash,
 } from '@/lib/comments-store';
 
 export interface DraftPinCoords {
@@ -132,27 +133,41 @@ export function CommentProvider({ children }: { children: React.ReactNode }) {
 
   const deleteComment = useCallback(
     (id: string) => {
+      const commentToDelete = comments.find((c) => c.id === id);
+
       setComments((prev) => {
         const next = prev.filter((c) => c.id !== id);
         saveCommentsToStorage(next);
         return next;
       });
+
+      if (commentToDelete) {
+        moveToTrash(commentToDelete);
+      }
+
       if (activeCommentId === id) {
         setActiveCommentId(null);
       }
     },
-    [activeCommentId]
+    [comments, activeCommentId]
   );
 
   const clearPageComments = useCallback(() => {
+    const toDelete = comments.filter((c) => c.route === pathname);
+
     setComments((prev) => {
       const next = prev.filter((c) => c.route !== pathname);
       saveCommentsToStorage(next);
       return next;
     });
+
+    toDelete.forEach((comment) => {
+      moveToTrash(comment);
+    });
+
     setActiveCommentId(null);
     setDraftPin(null);
-  }, [pathname]);
+  }, [comments, pathname]);
 
   return (
     <CommentContext.Provider

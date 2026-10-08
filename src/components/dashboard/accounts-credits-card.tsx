@@ -53,13 +53,13 @@ export function AccountsCreditsCard() {
 
   return (
     <article
-      aria-label="Accounts Credits usage"
+      aria-label="Agent Credits usage"
       className="relative flex h-full min-h-[290px] lg:min-h-0 w-full flex-col justify-between rounded-[22px] bg-white p-4 sm:p-5 lg:p-5 xl:p-6 shadow-panel"
     >
       {/* Top Header */}
       <div className="flex items-center justify-between gap-2">
         <h2 className="text-[18px] sm:text-[20px] lg:text-[21.9px] font-medium tracking-tight text-ink">
-          Accounts Credits
+          Agent Credits
         </h2>
         <PillDropdown
           value={period}

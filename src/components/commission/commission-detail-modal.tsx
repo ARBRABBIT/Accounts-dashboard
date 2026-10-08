@@ -77,7 +77,7 @@ export function CommissionDetailModal({
                 </span>
               </div>
               <p className="mt-1 text-sm text-muted">
-                Partner Agent • {agent.agentId}
+                {agent.role || 'Partner Agent'}
               </p>
             </div>
           </div>

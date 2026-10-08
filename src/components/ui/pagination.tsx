@@ -24,7 +24,7 @@ export function Pagination({
 
   return (
     <div
-      className={`flex flex-col gap-3 px-6 py-4 sm:px-8 sm:py-5 border-t border-[#F2F2F2] sm:flex-row sm:items-center sm:justify-between text-[13px] font-medium text-[#5E5E63] ${className}`}
+      className={`flex flex-col gap-2.5 px-6 py-2.5 sm:px-8 sm:py-3.5 border-t border-[#F2F2F2] sm:flex-row sm:items-center sm:justify-between text-[13px] font-medium text-[#5E5E63] ${className}`}
     >
       <p>
         {total === 0

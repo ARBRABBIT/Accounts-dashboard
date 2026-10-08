@@ -1,5 +1,5 @@
 'use client';
-import { Lightbulb } from 'lucide-react';
+import { Lightbulb, ChevronRight } from 'lucide-react';
 import { revenueInsightData } from '@/lib/payment-management-data';
 
 interface PaymentInsightCardProps {
@@ -12,46 +12,61 @@ export function PaymentInsightCard({
   onDismiss,
 }: PaymentInsightCardProps) {
   return (
-    <div className="relative flex h-full min-h-[200px] lg:min-h-0 w-full flex-col justify-between rounded-[24px] sm:rounded-[28px] lg:rounded-[32px] bg-[#006194] p-5 sm:p-6 lg:p-6 xl:p-7 shadow-[0px_25px_50px_-12px_rgba(0,97,148,0.1)] text-left">
-      {/* Top Section: Icon, Tag, and Insight Text */}
-      <div className="flex flex-col items-start gap-2.5">
-        {/* Lightbulb Icon in frosted container */}
-        <div className="flex h-11 w-11 sm:h-12 sm:w-12 items-center justify-center rounded-[14px] sm:rounded-[16px] bg-white/10">
-          <Lightbulb size={22} className="text-white" />
+    <div className="relative flex h-full w-full flex-col justify-between rounded-[24px] bg-[#006194] p-5 sm:p-6 lg:p-7 shadow-xs text-left min-h-0 text-white">
+      {/* Top Header */}
+      <div className="flex items-center justify-between">
+        <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-white/15 text-white">
+          <Lightbulb size={22} />
         </div>
-
-        {/* Tag */}
-        <span className="mt-1 text-[11px] font-black uppercase tracking-[1.3px] text-white/60">
+        <span className="text-[11px] font-bold uppercase tracking-wider text-white/70">
           {revenueInsightData.tag}
         </span>
+      </div>
 
-        {/* Insight Description */}
-        <p className="text-xs sm:text-sm lg:text-[14px] font-medium leading-relaxed text-white/90 line-clamp-3">
+      {/* Main Content */}
+      <div className="my-auto py-2">
+        <h2 className="text-xl font-bold tracking-tight text-white">
+          Forecast & Pipeline
+        </h2>
+        <p className="mt-1 text-xs sm:text-[13px] leading-relaxed text-white/85">
           {revenueInsightData.headline}{' '}
           <span className="font-bold text-white">
             {revenueInsightData.projectedAmount}
           </span>{' '}
           {revenueInsightData.description}
         </p>
+
+        {/* Clean minimal projection metrics in columns (NO nested boxed cards) */}
+        <div className="mt-3.5 sm:mt-4 grid grid-cols-3 divide-x divide-white/15 border-t border-b border-white/15 py-2.5 text-center">
+          {revenueInsightData.projections.map((proj) => (
+            <div key={proj.period} className="px-2 first:pl-0 last:pr-0">
+              <div className="text-[11px] text-white/70 truncate">{proj.period}</div>
+              <div className="text-base sm:text-lg font-bold text-white mt-0.5">{proj.target}</div>
+              <div className="text-[10px] text-[#86EFAC] font-medium">{proj.confidence} conf.</div>
+            </div>
+          ))}
+        </div>
       </div>
 
-      {/* Bottom Section: Action Buttons */}
-      <div className="mt-3 sm:mt-4 flex flex-col gap-2 w-full">
+      {/* Bottom Action: Clean single button + optional dismiss link */}
+      <div className="flex items-center justify-between pt-2">
         <button
           type="button"
           onClick={onViewProjections}
-          className="flex h-[38px] sm:h-[40px] w-full items-center justify-center rounded-xl bg-white text-xs sm:text-[13px] font-bold tracking-[0.13px] text-[#006194] shadow-[0px_4px_24px_-2px_rgba(0,0,0,0.06),0px_2px_8px_-1px_rgba(0,0,0,0.04)] transition hover:bg-white/95 active:scale-95 focus-visible:outline-2 focus-visible:outline-white cursor-pointer"
+          className="inline-flex h-10 items-center justify-center gap-1.5 rounded-full bg-white px-5 text-xs sm:text-sm font-bold text-[#006194] shadow-xs transition hover:bg-white/95 active:scale-95 cursor-pointer"
         >
-          View Projections
+          View Projections <ChevronRight size={15} />
         </button>
 
-        <button
-          type="button"
-          onClick={onDismiss}
-          className="flex h-[28px] sm:h-[30px] w-full items-center justify-center text-xs sm:text-[13px] font-bold tracking-[0.13px] text-white/60 transition hover:text-white cursor-pointer"
-        >
-          Dismiss
-        </button>
+        {onDismiss && (
+          <button
+            type="button"
+            onClick={onDismiss}
+            className="text-xs font-medium text-white/60 hover:text-white transition cursor-pointer"
+          >
+            Dismiss
+          </button>
+        )}
       </div>
     </div>
   );

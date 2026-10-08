@@ -66,14 +66,14 @@ export function AgentCommissionTable({
                   className="group transition-colors hover:bg-[#F8FAFC]"
                 >
                   {/* Farmland ID column - FIRST */}
-                  <td className="px-5 sm:px-6 lg:px-8 py-2.5 sm:py-3">
+                  <td className="px-5 sm:px-6 lg:px-8 py-3 sm:py-3.5">
                     <span className="inline-flex items-center rounded-lg bg-[#F1F5F9] px-2.5 py-1 text-xs font-bold text-[#00609A]">
                       {agent.landId}
                     </span>
                   </td>
 
                   {/* Agent column */}
-                  <td className="px-5 sm:px-6 lg:px-8 py-2.5 sm:py-3">
+                  <td className="px-5 sm:px-6 lg:px-8 py-3 sm:py-3.5">
                     <div className="flex items-center gap-3">
                       <img
                         src={agent.avatarUrl}
@@ -85,40 +85,40 @@ export function AgentCommissionTable({
                           {agent.name}
                         </div>
                         <div className="text-[11px] font-medium text-[#64748B]">
-                          {agent.agentId}
+                          {agent.role || 'Partner Agent'}
                         </div>
                       </div>
                     </div>
                   </td>
 
                   {/* Region column */}
-                  <td className="px-5 sm:px-6 lg:px-8 py-2.5 sm:py-3">
+                  <td className="px-5 sm:px-6 lg:px-8 py-3 sm:py-3.5">
                     <span className="font-semibold text-[#191C1E] text-sm">
                       {agent.region}
                     </span>
                   </td>
 
                   {/* District / Area column */}
-                  <td className="px-5 sm:px-6 lg:px-8 py-2.5 sm:py-3">
+                  <td className="px-5 sm:px-6 lg:px-8 py-3 sm:py-3.5">
                     <span className="font-medium text-[#46464A] text-sm">
                       {agent.areaOrDistrict}
                     </span>
                   </td>
 
                   {/* Date column */}
-                  <td className="px-5 sm:px-6 lg:px-8 py-2.5 sm:py-3 text-sm font-medium text-[#5E5E63] tabular-nums">
+                  <td className="px-5 sm:px-6 lg:px-8 py-3 sm:py-3.5 text-sm font-medium text-[#5E5E63] tabular-nums">
                     {agent.date}
                   </td>
 
                   {/* Amount column */}
-                  <td className="px-5 sm:px-6 lg:px-8 py-2.5 sm:py-3 text-right font-bold tabular-nums text-sm sm:text-base">
+                  <td className="px-5 sm:px-6 lg:px-8 py-3 sm:py-3.5 text-right font-bold tabular-nums text-sm sm:text-base">
                     <span className="bg-gradient-to-r from-[#2780C4] to-[#154B73] bg-clip-text text-transparent">
                       {agent.formattedAmount}
                     </span>
                   </td>
 
                   {/* Status column */}
-                  <td className="px-5 sm:px-6 lg:px-8 py-2.5 sm:py-3 text-center">
+                  <td className="px-5 sm:px-6 lg:px-8 py-3 sm:py-3.5 text-center">
                     <span
                       className={`inline-flex items-center gap-1.5 rounded-full px-2.5 py-0.5 text-[10.5px] font-bold uppercase tracking-[0.5px] ${
                         isPaid
@@ -136,7 +136,7 @@ export function AgentCommissionTable({
                   </td>
 
                   {/* Action column */}
-                  <td className="px-5 sm:px-6 lg:px-8 py-2.5 sm:py-3 text-right">
+                  <td className="px-5 sm:px-6 lg:px-8 py-3 sm:py-3.5 text-right">
                     <button
                       type="button"
                       onClick={() => onView(agent)}

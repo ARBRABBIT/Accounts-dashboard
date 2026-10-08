@@ -73,7 +73,7 @@ export default function AccountsDashboardPage() {
               </div>
             </div>
 
-            {/* Row 2: Platform Collections Activity (col-span-7) & Accounts Credits (col-span-5) */}
+            {/* Row 2: Platform Collections Activity (col-span-7) & Agent Credits (col-span-5) */}
             <div className="grid grid-cols-1 gap-3 md:gap-3.5 lg:gap-4 lg:grid-cols-12 flex-1 min-h-0">
               <div className="dashboard-card lg:col-span-7 xl:col-span-7 flex min-h-0">
                 <PlatformCollectionsCard />

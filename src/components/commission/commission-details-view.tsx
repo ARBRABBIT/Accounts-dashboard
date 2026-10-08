@@ -7,7 +7,7 @@ import {
   Building2,
   Map,
   Phone,
-  CreditCard,
+  Mail,
   ChevronRight,
 } from 'lucide-react';
 import { Pagination } from '@/components/ui/pagination';
@@ -105,17 +105,17 @@ export function CommissionDetailsView({
           </h3>
 
           <div className="mt-4 flex flex-col gap-3">
-            {/* Agent ID */}
+            {/* Email Address */}
             <div className="flex items-center gap-4 rounded-xl border border-[rgba(192,199,210,0.1)] bg-[#F4F4F4]/70 p-4">
               <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-[rgba(39,128,196,0.1)] text-[#2780C4]">
-                <CreditCard size={18} />
+                <Mail size={18} />
               </div>
-              <div>
+              <div className="min-w-0 flex-1">
                 <span className="block text-[11px] font-normal uppercase tracking-[0.55px] text-[#404750]">
-                  AGENT ID
+                  EMAIL ADDRESS
                 </span>
-                <span className="block text-base font-semibold text-[#191C1E]">
-                  {agent.agentId}
+                <span className="block text-base font-semibold text-[#191C1E] truncate">
+                  {agent.email || `${agent.name.toLowerCase().replace(/\s+/g, '.')}@glc-agents.in`}
                 </span>
               </div>
             </div>

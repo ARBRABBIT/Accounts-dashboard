@@ -20,7 +20,7 @@ export default function CreditsManagementPage() {
   const [selectedDetailAccount, setSelectedDetailAccount] =
     useState<AgentCredit | null>(null);
   const [currentPage, setCurrentPage] = useState(1);
-  const pageSize = 6;
+  const pageSize = 8;
 
   // Active list based on Agents vs Users tab
   const activeList = activeTab === 'Agents' ? agentList : userList;

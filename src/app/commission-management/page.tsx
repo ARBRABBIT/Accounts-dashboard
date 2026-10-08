@@ -20,7 +20,7 @@ export default function CommissionManagementPage() {
   const [selectedAgent, setSelectedAgent] = useState<AgentCommission | null>(null);
   const [isDetailOpen, setIsDetailOpen] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
-  const pageSize = 6;
+  const pageSize = 8;
 
   // Reset page when filters change
   useEffect(() => {

@@ -1,0 +1,20 @@
+[
+  {
+    "id": "comment-initial-1",
+    "route": "/",
+    "relX": 350,
+    "relY": 180,
+    "containerWidth": 1440,
+    "text": "Platform Revenue Run-Rate is trending up nicely this quarter. Check agent payout ratios.",
+    "author": {
+      "id": "user-1",
+      "name": "Bhargav Adepu",
+      "role": "Product Lead",
+      "avatar": "/assets/avatar.png",
+      "initials": "BA",
+      "color": "#2780C4"
+    },
+    "createdAt": "2026-10-08T05:33:09.596Z",
+    "deletedAt": "2026-10-08T06:18:12.958Z"
+  }
+]
