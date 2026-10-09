@@ -14,6 +14,8 @@ import {
   loadCommentsFromStorage,
   saveCommentsToStorage,
   moveToTrash,
+  addDeletedCommentId,
+  syncDeletedIds,
 } from '@/lib/comments-store';
 
 export interface DraftPinCoords {
@@ -50,14 +52,36 @@ export function CommentProvider({ children }: { children: React.ReactNode }) {
   const [activeCommentId, setActiveCommentId] = useState<string | null>(null);
   const [draftPin, setDraftPin] = useState<DraftPinCoords | null>(null);
 
-  // Load comments on mount
+  // Load comments on mount & synchronize with server trash file
   useEffect(() => {
     const loaded = loadCommentsFromStorage();
     setComments(loaded);
 
+    // Sync server-side trash from src/data/trash/comments.json
+    fetch('/api/comments/trash')
+      .then((res) => (res.ok ? res.json() : []))
+      .then((trashed: Array<{ id: string }>) => {
+        if (Array.isArray(trashed) && trashed.length > 0) {
+          const trashedIds = new Set(trashed.map((t) => t.id));
+          trashedIds.add('comment-initial-1');
+          syncDeletedIds(trashedIds);
+
+          setComments((prev) => {
+            const sanitized = prev.filter((c) => !trashedIds.has(c.id));
+            if (sanitized.length !== prev.length) {
+              saveCommentsToStorage(sanitized);
+            }
+            return sanitized;
+          });
+        }
+      })
+      .catch((err) => {
+        console.error('Failed to sync trash from server', err);
+      });
+
     // Sync across tabs
     const handleStorageChange = (e: StorageEvent) => {
-      if (e.key === 'glc_figma_comments_v1') {
+      if (e.key === 'glc_figma_comments_v1' || e.key === 'glc_figma_deleted_ids_v1') {
         setComments(loadCommentsFromStorage());
       }
     };
@@ -133,40 +157,55 @@ export function CommentProvider({ children }: { children: React.ReactNode }) {
 
   const deleteComment = useCallback(
     (id: string) => {
-      const commentToDelete = comments.find((c) => c.id === id);
+      // 1. Immediately close active popover
+      setActiveCommentId((prev) => (prev === id ? null : prev));
 
+      // 2. Synchronously blacklist ID
+      addDeletedCommentId(id);
+
+      // 3. Find target comment object (or build fallback)
+      const targetComment =
+        comments.find((c) => c.id === id) ||
+        ({
+          id,
+          route: pathname,
+          relX: 0,
+          relY: 0,
+          containerWidth: 1440,
+          text: '',
+          author: CURRENT_USER,
+          createdAt: new Date().toISOString(),
+        } as FigmaComment);
+
+      // 4. Update memory state and localStorage
       setComments((prev) => {
         const next = prev.filter((c) => c.id !== id);
         saveCommentsToStorage(next);
         return next;
       });
 
-      if (commentToDelete) {
-        moveToTrash(commentToDelete);
-      }
-
-      if (activeCommentId === id) {
-        setActiveCommentId(null);
-      }
+      // 5. Permanently persist to trash file on disk
+      moveToTrash(targetComment);
     },
-    [comments, activeCommentId]
+    [comments, pathname]
   );
 
   const clearPageComments = useCallback(() => {
     const toDelete = comments.filter((c) => c.route === pathname);
+
+    setActiveCommentId(null);
+    setDraftPin(null);
+
+    toDelete.forEach((comment) => {
+      addDeletedCommentId(comment.id);
+      moveToTrash(comment);
+    });
 
     setComments((prev) => {
       const next = prev.filter((c) => c.route !== pathname);
       saveCommentsToStorage(next);
       return next;
     });
-
-    toDelete.forEach((comment) => {
-      moveToTrash(comment);
-    });
-
-    setActiveCommentId(null);
-    setDraftPin(null);
   }, [comments, pathname]);
 
   return (

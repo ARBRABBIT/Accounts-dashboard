@@ -5,7 +5,6 @@ import gsap from 'gsap';
 import {
   ArrowLeft,
   Briefcase,
-  Calendar as CalendarIcon,
   Star,
   Award,
   Layers,
@@ -23,10 +22,11 @@ import {
   Landmark,
   Sparkles,
   Coins,
+  X,
 } from 'lucide-react';
-import { Modal } from '@/components/ui/modal';
 import { Pagination } from '@/components/ui/pagination';
 import { BackButton } from '@/components/ui/back-button';
+import { DatePickerPopover } from '@/components/ui/date-picker-popover';
 import {
   enterpriseMetrics,
   subscriptionPlans,
@@ -36,15 +36,50 @@ import {
   SubscriberRecord,
 } from '@/lib/subscription-data';
 
+const MONTH_INDEX_MAP: Record<string, number> = {
+  JAN: 0, FEB: 1, MAR: 2, APR: 3, MAY: 4, JUN: 5,
+  JUL: 6, AUG: 7, SEP: 8, OCT: 9, NOV: 10, DEC: 11,
+};
+
+function parseDateToNumber(dateStr: string): number | null {
+  const clean = dateStr.replace(',', '').trim();
+  const parts = clean.split(/\s+/);
+  if (parts.length !== 3) return null;
+  const month = MONTH_INDEX_MAP[parts[0].toUpperCase()];
+  const day = parseInt(parts[1], 10);
+  const year = parseInt(parts[2], 10);
+  if (month === undefined || isNaN(day) || isNaN(year)) return null;
+  return year * 10000 + month * 100 + day;
+}
+
+function parseYMDToNumber(ymdStr: string): number | null {
+  const parts = ymdStr.split('-');
+  if (parts.length !== 3) return null;
+  const year = parseInt(parts[0], 10);
+  const month = parseInt(parts[1], 10) - 1;
+  const day = parseInt(parts[2], 10);
+  if (isNaN(year) || isNaN(month) || isNaN(day)) return null;
+  return year * 10000 + month * 100 + day;
+}
+
+function isSubscriberActiveOnDate(sub: SubscriberRecord, filterDateStr: string): boolean {
+  if (!filterDateStr) return true;
+  const target = parseYMDToNumber(filterDateStr);
+  const start = parseDateToNumber(sub.startDate);
+  const end = parseDateToNumber(sub.endDate);
+  if (target === null || start === null || end === null) return true;
+  return target >= start && target <= end;
+}
+
 export default function SubscriptionPage() {
   const router = useRouter();
   const rootRef = useRef<HTMLDivElement>(null);
   // Default to Platinum Annual Plan (subscriptionPlans[0]) to immediately display the requested screen
   const [selectedPlan, setSelectedPlan] = useState<SubscriptionPlan | null>(subscriptionPlans[0]);
+  const [activeCycle, setActiveCycle] = useState<'Monthly' | 'Annual'>('Annual');
   const [selectedSubscriber, setSelectedSubscriber] = useState<SubscriberRecord | null>(null);
   const [subscriberSearch, setSubscriberSearch] = useState('');
-  const [showCalendarModal, setShowCalendarModal] = useState(false);
-  const [selectedPeriod, setSelectedPeriod] = useState('Calendar');
+  const [selectedDate, setSelectedDate] = useState('');
   const [actionToast, setActionToast] = useState<string | null>(null);
 
   function triggerToast(msg: string) {
@@ -83,7 +118,7 @@ export default function SubscriptionPage() {
     }, rootRef);
 
     return () => ctx.revert();
-  }, [selectedPlan, selectedSubscriber]);
+  }, [selectedPlan, selectedSubscriber, activeCycle, selectedDate]);
 
   function handleBack() {
     if (selectedSubscriber) {
@@ -142,17 +177,30 @@ export default function SubscriptionPage() {
     }
   }
 
-  const planDisplayName = selectedPlan
-    ? selectedPlan.name.toLowerCase().endsWith('plan')
-      ? selectedPlan.name
-      : `${selectedPlan.name} Plan`
+  const basePlanName = selectedPlan
+    ? activeCycle === 'Monthly'
+      ? selectedPlan.name.replace(/Annual/i, 'Monthly')
+      : selectedPlan.name
     : '';
 
-  const activeSubscribers = selectedPlan ? getSubscribersForPlan(selectedPlan.id) : [];
+  const planDisplayName = selectedPlan
+    ? basePlanName.toLowerCase().endsWith('plan')
+      ? basePlanName
+      : `${basePlanName} Plan`
+    : '';
 
-  const filteredSubscribers = activeSubscribers.filter((sub) =>
-    sub.name.toLowerCase().includes(subscriberSearch.toLowerCase())
-  );
+  const activeSubscribers = selectedPlan
+    ? getSubscribersForPlan(
+        selectedPlan.id,
+        activeCycle === 'Monthly' ? 'MONTHLY' : 'ANNUAL'
+      )
+    : [];
+
+  const filteredSubscribers = activeSubscribers.filter((sub) => {
+    const matchesSearch = sub.name.toLowerCase().includes(subscriberSearch.toLowerCase());
+    const matchesDate = isSubscriberActiveOnDate(sub, selectedDate);
+    return matchesSearch && matchesDate;
+  });
 
   return (
     <div
@@ -342,10 +390,10 @@ export default function SubscriptionPage() {
                     </p>
                   </div>
 
-                  {/* Card 3: Annual Fee */}
+                  {/* Card 3: Fee Billed */}
                   <div className="rounded-[22px] border border-white/60 bg-white p-5 shadow-xs">
                     <span className="text-[11px] font-bold tracking-[1px] uppercase text-[#64748B]">
-                      ANNUAL FEE BILLED
+                      {customer.cycle === 'MONTHLY' ? 'MONTHLY FEE BILLED' : 'ANNUAL FEE BILLED'}
                     </span>
                     <div className="mt-2 text-xl font-bold tracking-tight text-[#191C1E]">
                       {customer.amountPaid}
@@ -740,7 +788,9 @@ export default function SubscriptionPage() {
                       TOTAL SUBSCRIBERS
                     </span>
                     <span className="mt-1.5 text-[15.7px] font-normal text-[#191C1E]">
-                      {selectedPlan.subscribers || '1,245'}
+                      {activeCycle === 'Monthly'
+                        ? selectedPlan.monthlySubscribers || '864'
+                        : selectedPlan.subscribers || '1,245'}
                     </span>
                   </div>
 
@@ -750,7 +800,9 @@ export default function SubscriptionPage() {
                       TOTAL REVENUE
                     </span>
                     <span className="mt-1.5 text-[15.7px] font-normal text-[#191C1E]">
-                      {selectedPlan.annualRevenue || '₹29.40 Cr'}
+                      {activeCycle === 'Monthly'
+                        ? selectedPlan.monthlyRevenue || '₹2.45 Cr'
+                        : selectedPlan.annualRevenue || '₹29.40 Cr'}
                     </span>
                   </div>
 
@@ -760,7 +812,9 @@ export default function SubscriptionPage() {
                       RENEWAL RATE
                     </span>
                     <span className="mt-1.5 text-[15.7px] font-normal text-[#00609A]">
-                      {selectedPlan.renewalRate || '98.4%'}
+                      {activeCycle === 'Monthly'
+                        ? selectedPlan.monthlyRenewalRate || '97.4%'
+                        : selectedPlan.renewalRate || '99.1%'}
                     </span>
                   </div>
                 </div>
@@ -779,7 +833,41 @@ export default function SubscriptionPage() {
                   </p>
                 </div>
 
-                <div className="flex items-center gap-3">
+                <div className="flex flex-wrap items-center gap-3">
+                  {/* Segmented Tabs: Monthly / Annual */}
+                  <div
+                    role="tablist"
+                    aria-label="Filter subscribers by billing cycle"
+                    className="inline-flex h-[42px] items-center rounded-full border border-[#E5E5EA] bg-white p-1 shadow-xs"
+                  >
+                    <button
+                      type="button"
+                      role="tab"
+                      aria-selected={activeCycle === 'Monthly'}
+                      onClick={() => setActiveCycle('Monthly')}
+                      className={`h-[34px] rounded-full px-4 text-xs sm:text-sm font-semibold transition-all cursor-pointer ${
+                        activeCycle === 'Monthly'
+                          ? 'bg-[#2780C4] text-white shadow-xs'
+                          : 'text-[#64748B] hover:text-[#191C1D]'
+                      }`}
+                    >
+                      Monthly
+                    </button>
+                    <button
+                      type="button"
+                      role="tab"
+                      aria-selected={activeCycle === 'Annual'}
+                      onClick={() => setActiveCycle('Annual')}
+                      className={`h-[34px] rounded-full px-4 text-xs sm:text-sm font-semibold transition-all cursor-pointer ${
+                        activeCycle === 'Annual'
+                          ? 'bg-[#2780C4] text-white shadow-xs'
+                          : 'text-[#64748B] hover:text-[#191C1D]'
+                      }`}
+                    >
+                      Annual
+                    </button>
+                  </div>
+
                   {/* Search field */}
                   <div className="relative flex items-center">
                     <Search size={18} className="pointer-events-none absolute left-4 text-[#5C5C5C]" />
@@ -788,19 +876,16 @@ export default function SubscriptionPage() {
                       placeholder="Search name.."
                       value={subscriberSearch}
                       onChange={(e) => setSubscriberSearch(e.target.value)}
-                      className="h-[42px] w-[220px] sm:w-[278px] rounded-[60px] border border-[#E5E5EA] bg-white pl-11 pr-4 text-sm text-[#1A1C1D] placeholder-[#5C5C5C] shadow-xs transition-all focus:border-[#2780C4] focus:outline-none"
+                      className="h-[42px] w-[180px] sm:w-[220px] md:w-[278px] rounded-[60px] border border-[#E5E5EA] bg-white pl-11 pr-4 text-sm text-[#1A1C1D] placeholder-[#5C5C5C] shadow-xs transition-all focus:border-[#2780C4] focus:outline-none"
                     />
                   </div>
 
-                  {/* Calendar button */}
-                  <button
-                    type="button"
-                    onClick={() => setShowCalendarModal(true)}
-                    className="inline-flex h-[42px] items-center gap-2 rounded-full border border-[#E5E5EA] bg-white px-5 text-sm font-normal text-[#1D1D1F] shadow-xs transition-colors hover:bg-slate-50 focus-visible:outline-2 focus-visible:outline-brand cursor-pointer"
-                  >
-                    <CalendarIcon size={16} className="text-[#86868B]" />
-                    <span>{selectedPeriod}</span>
-                  </button>
+                  {/* Custom UI Date Selector - Only Calendar Icon */}
+                  <DatePickerPopover
+                    value={selectedDate}
+                    onChange={setSelectedDate}
+                    defaultViewDate="2023-10-12"
+                  />
                 </div>
               </div>
 
@@ -831,59 +916,69 @@ export default function SubscriptionPage() {
                       </tr>
                     </thead>
                     <tbody className="divide-y divide-[#F2F2F2]">
-                      {filteredSubscribers.map((sub) => (
-                        <tr
-                          key={sub.id}
-                          className="sub-table-row group transition-colors hover:bg-[#F8FAFC]"
-                        >
-                          {/* Customer Name */}
-                          <td className="px-8 py-5">
-                            <div className="flex items-center gap-4">
-                              <img
-                                src={sub.avatarUrl}
-                                alt={sub.name}
-                                className="h-10 w-10 rounded-full object-cover border border-slate-100 shadow-xs shrink-0"
-                              />
-                              <span className="font-semibold text-base text-[#1E293B]">
-                                {sub.name}
-                              </span>
-                            </div>
-                          </td>
-
-                          {/* Amount Paid */}
-                          <td className="px-6 py-5 text-base font-normal text-[#191C1E]">
-                            {sub.amountPaid}
-                          </td>
-
-                          {/* Billing Cycle */}
-                          <td className="px-6 py-5 text-center">
-                            <span className="text-[11px] font-bold text-[#586377] uppercase tracking-[-0.55px]">
-                              {sub.cycle}
-                            </span>
-                          </td>
-
-                          {/* Start Date */}
-                          <td className="px-6 py-5 text-xs font-semibold text-[#94A3B8] tracking-[-0.6px] uppercase">
-                            {sub.startDate}
-                          </td>
-
-                          {/* End Date */}
-                          <td className="px-6 py-5 text-xs font-semibold text-[#94A3B8] tracking-[-0.6px] uppercase">
-                            {sub.endDate}
-                          </td>
-
-                          {/* Actions */}
-                          <td className="px-8 py-5 text-right">
-                            <button
-                              type="button"
-                              onClick={() => setSelectedSubscriber(sub)}
-                              className="inline-flex h-[37px] w-[85px] items-center justify-center rounded-[39px] bg-[#2780C4] text-xs font-semibold text-white shadow-xs transition-all hover:bg-[#1f6da8] hover:shadow-md active:scale-95 focus-visible:outline-2 focus-visible:outline-brand cursor-pointer"
-                            >
-                              View
-                            </button>
+                      {filteredSubscribers.length === 0 ? (
+                        <tr>
+                          <td colSpan={6} className="px-8 py-12 text-center text-sm text-[#64748B]">
+                            {selectedDate
+                              ? `No ${activeCycle.toLowerCase()} subscribers active on ${new Date(selectedDate + 'T00:00:00').toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}`
+                              : `No ${activeCycle.toLowerCase()} subscribers found matching \u201c${subscriberSearch}\u201d`}
                           </td>
                         </tr>
-                      ))}
+                      ) : (
+                        filteredSubscribers.map((sub) => (
+                          <tr
+                            key={sub.id}
+                            className="sub-table-row group transition-colors hover:bg-[#F8FAFC]"
+                          >
+                            {/* Customer Name */}
+                            <td className="px-8 py-5">
+                              <div className="flex items-center gap-4">
+                                <img
+                                  src={sub.avatarUrl}
+                                  alt={sub.name}
+                                  className="h-10 w-10 rounded-full object-cover border border-slate-100 shadow-xs shrink-0"
+                                />
+                                <span className="font-semibold text-base text-[#1E293B]">
+                                  {sub.name}
+                                </span>
+                              </div>
+                            </td>
+
+                            {/* Amount Paid */}
+                            <td className="px-6 py-5 text-base font-normal text-[#191C1E]">
+                              {sub.amountPaid}
+                            </td>
+
+                            {/* Billing Cycle */}
+                            <td className="px-6 py-5 text-center">
+                              <span className="text-[11px] font-bold text-[#586377] uppercase tracking-[-0.55px]">
+                                {sub.cycle}
+                              </span>
+                            </td>
+
+                            {/* Start Date */}
+                            <td className="px-6 py-5 text-xs font-semibold text-[#94A3B8] tracking-[-0.6px] uppercase">
+                              {sub.startDate}
+                            </td>
+
+                            {/* End Date */}
+                            <td className="px-6 py-5 text-xs font-semibold text-[#94A3B8] tracking-[-0.6px] uppercase">
+                              {sub.endDate}
+                            </td>
+
+                            {/* Actions */}
+                            <td className="px-8 py-5 text-right">
+                              <button
+                                type="button"
+                                onClick={() => setSelectedSubscriber(sub)}
+                                className="inline-flex h-[37px] w-[85px] items-center justify-center rounded-[39px] bg-[#2780C4] text-xs font-semibold text-white shadow-xs transition-all hover:bg-[#1f6da8] hover:shadow-md active:scale-95 focus-visible:outline-2 focus-visible:outline-brand cursor-pointer"
+                              >
+                                View
+                              </button>
+                            </td>
+                          </tr>
+                        ))
+                      )}
                     </tbody>
                   </table>
                 </div>
@@ -891,7 +986,11 @@ export default function SubscriptionPage() {
                 {/* Pagination Footer matching Figma */}
                 <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between border-t border-[#F1F5F9] bg-white px-6 py-4">
                   <span className="text-xs font-medium text-[#5E5E63]">
-                    Showing 1 to {filteredSubscribers.length} of {selectedPlan.subscribers || '1,284'} customers
+                    Showing 1 to {filteredSubscribers.length} of{' '}
+                    {activeCycle === 'Monthly'
+                      ? selectedPlan.monthlySubscribers || '864'
+                      : selectedPlan.subscribers || '1,245'}{' '}
+                    customers
                   </span>
 
                   <div className="flex items-center gap-1.5 sm:gap-2">
@@ -931,7 +1030,9 @@ export default function SubscriptionPage() {
                       type="button"
                       className="flex h-8 px-2 items-center justify-center rounded-lg text-xs font-bold text-[#475569] hover:bg-slate-100 transition-colors"
                     >
-                      1284
+                      {activeCycle === 'Monthly'
+                        ? selectedPlan.monthlySubscribers || '864'
+                        : selectedPlan.subscribers || '1245'}
                     </button>
 
                     <button
@@ -1023,14 +1124,12 @@ export default function SubscriptionPage() {
                   </p>
                 </div>
 
-                <button
-                  type="button"
-                  onClick={() => setShowCalendarModal(true)}
-                  className="inline-flex w-fit items-center gap-2 rounded-full border border-[#E5E5EA] bg-white px-4 py-2 text-sm font-medium text-[#1A1C1D] shadow-xs transition-colors hover:bg-slate-50 focus-visible:outline-2 focus-visible:outline-brand cursor-pointer"
-                >
-                  <CalendarIcon size={16} className="text-[#5E5E63]" />
-                  <span>Calendar</span>
-                </button>
+                {/* Date Selector - Only Calendar Icon */}
+                <DatePickerPopover
+                  value=""
+                  onChange={() => {}}
+                  defaultViewDate="2023-10-12"
+                />
               </div>
 
               {/* Table Container */}
@@ -1116,47 +1215,6 @@ export default function SubscriptionPage() {
               </div>
             </section>
           </div>
-        )}
-
-        {/* Modal: Calendar Period Filter */}
-        {showCalendarModal && (
-          <Modal
-            title="Filter by Fiscal Period"
-            onClose={() => setShowCalendarModal(false)}
-          >
-            <div className="space-y-4">
-              <p className="text-sm text-muted">
-                Select settlement accounting window to recalculate annualized run rates and renewal cohorts.
-              </p>
-              <div className="space-y-2">
-                {[
-                  'Fiscal Year 2025-26',
-                  'Fiscal Year 2024-25',
-                  'Last 90 Days (Q4)',
-                  'Month-to-Date (MTD)',
-                ].map((period) => (
-                  <button
-                    key={period}
-                    type="button"
-                    onClick={() => {
-                      setSelectedPeriod(period);
-                      setShowCalendarModal(false);
-                    }}
-                    className={`flex w-full items-center justify-between rounded-xl border p-3.5 text-left text-sm font-semibold transition-colors ${
-                      selectedPeriod === period
-                        ? 'border-[#2780C4] bg-[#2780C4]/5 text-[#2780C4]'
-                        : 'border-[#E5E5EA] bg-white text-[#191C1E] hover:bg-slate-50'
-                    }`}
-                  >
-                    <span>{period}</span>
-                    {selectedPeriod === period && (
-                      <CheckCircle2 size={18} className="text-[#2780C4]" />
-                    )}
-                  </button>
-                ))}
-              </div>
-            </div>
-          </Modal>
         )}
       </div>
     </div>

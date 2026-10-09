@@ -12,7 +12,6 @@ import {
   Send,
   CornerDownLeft,
   Check,
-  AlertTriangle,
 } from 'lucide-react';
 
 interface CommentCardProps {
@@ -39,7 +38,6 @@ export function CommentCard({
   const [draftText, setDraftText] = useState('');
   const [isEditing, setIsEditing] = useState(false);
   const [editText, setEditText] = useState(comment?.text || '');
-  const [isConfirmingDelete, setIsConfirmingDelete] = useState(false);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   const cardRef = useRef<HTMLDivElement>(null);
 
@@ -156,7 +154,6 @@ export function CommentCard({
                 type="button"
                 onClick={() => {
                   setIsEditing(true);
-                  setIsConfirmingDelete(false);
                 }}
                 aria-label="Edit comment"
                 title="Edit comment"
@@ -167,9 +164,14 @@ export function CommentCard({
 
               <button
                 type="button"
-                onClick={() => setIsConfirmingDelete(true)}
+                onClick={() => {
+                  if (comment) {
+                    onDelete?.(comment.id);
+                    onClose();
+                  }
+                }}
                 aria-label="Delete comment"
-                title="Delete comment"
+                title="Delete comment (moves to trash)"
                 className="flex h-7 w-7 items-center justify-center rounded-lg text-muted transition-colors hover:bg-red-50 hover:text-danger focus-visible:outline-2 focus-visible:outline-brand"
               >
                 <Trash2 size={13} />
@@ -188,34 +190,6 @@ export function CommentCard({
           </button>
         </div>
       </div>
-
-      {/* Delete Confirmation Banner */}
-      {isConfirmingDelete && !isDraft && (
-        <div className="mt-3 rounded-xl border border-red-200 bg-red-50/70 p-2.5">
-          <div className="flex items-center gap-2 text-xs font-semibold text-danger">
-            <AlertTriangle size={14} />
-            <span>Delete this comment permanently?</span>
-          </div>
-          <div className="mt-2.5 flex items-center justify-end gap-2">
-            <button
-              type="button"
-              onClick={() => setIsConfirmingDelete(false)}
-              className="rounded-lg px-2.5 py-1 text-xs font-medium text-muted hover:bg-white transition-colors"
-            >
-              Cancel
-            </button>
-            <button
-              type="button"
-              onClick={() => {
-                if (comment) onDelete?.(comment.id);
-              }}
-              className="rounded-lg bg-danger px-3 py-1 text-xs font-bold text-white transition-opacity hover:opacity-90"
-            >
-              Delete
-            </button>
-          </div>
-        </div>
-      )}
 
       {/* Content Area */}
       <div className="mt-3">
@@ -298,13 +272,11 @@ export function CommentCard({
           </div>
         ) : (
           /* View mode */
-          !isConfirmingDelete && (
-            <div className="py-1">
-              <p className="whitespace-pre-wrap text-xs leading-relaxed text-ink font-normal">
-                {comment?.text}
-              </p>
-            </div>
-          )
+          <div className="py-1">
+            <p className="whitespace-pre-wrap text-xs leading-relaxed text-ink font-normal">
+              {comment?.text}
+            </p>
+          </div>
         )}
       </div>
     </div>

@@ -2,7 +2,6 @@
 import { useState, useMemo } from 'react';
 import {
   Search,
-  Calendar,
   MapPin,
   Building2,
   Map,
@@ -11,7 +10,9 @@ import {
   ChevronRight,
 } from 'lucide-react';
 import { Pagination } from '@/components/ui/pagination';
-import { AgentCommission } from '@/lib/commission-management-data';
+import { DatePickerPopover } from '@/components/ui/date-picker-popover';
+import { AgentCommission, PropertyCommissionDeal } from '@/lib/commission-management-data';
+import { FarmlandDetailView } from './farmland-detail-view';
 
 interface CommissionDetailsViewProps {
   agent: AgentCommission;
@@ -22,23 +23,57 @@ export function CommissionDetailsView({
   agent,
   onBack,
 }: CommissionDetailsViewProps) {
+  const [statusTab, setStatusTab] = useState<'Settled' | 'Pending'>('Settled');
   const [landSearch, setLandSearch] = useState('');
+  const [selectedDate, setSelectedDate] = useState('');
+  const [selectedDeal, setSelectedDeal] = useState<PropertyCommissionDeal | null>(null);
   const deals = agent.deals || [];
 
   const filteredDeals = useMemo(() => {
-    if (!landSearch.trim()) return deals;
-    const q = landSearch.toLowerCase().trim();
-    return deals.filter(
-      (d) =>
-        d.landId.toLowerCase().includes(q) ||
-        d.customerName.toLowerCase().includes(q) ||
-        d.location.toLowerCase().includes(q)
+    let result = deals;
+
+    // Filter by status tab (Settled / Pending)
+    if (statusTab) {
+      result = result.filter((d) => d.status === statusTab);
+    }
+
+    if (landSearch.trim()) {
+      const q = landSearch.toLowerCase().trim();
+      result = result.filter(
+        (d) =>
+          d.landId.toLowerCase().includes(q) ||
+          d.customerName.toLowerCase().includes(q) ||
+          d.location.toLowerCase().includes(q)
+      );
+    }
+
+    if (selectedDate) {
+      // If a specific date filter is selected, match against settlementDate or keep active
+      const formattedDate = new Date(selectedDate + 'T00:00:00').toLocaleDateString('en-US', {
+        month: 'short',
+        year: 'numeric',
+      }).toUpperCase();
+      result = result.filter((d) => !d.settlementDate || d.settlementDate.toUpperCase().includes(formattedDate.slice(0, 3)));
+    }
+
+    return result;
+  }, [deals, statusTab, landSearch, selectedDate]);
+
+  // If a farmland deal is clicked, render the dedicated View Detail Page
+  if (selectedDeal) {
+    return (
+      <FarmlandDetailView
+        deal={selectedDeal}
+        agent={agent}
+        onBack={() => setSelectedDeal(null)}
+        onBackToManagement={onBack}
+      />
     );
-  }, [deals, landSearch]);
+  }
 
   return (
     <div className="flex flex-1 flex-col gap-8">
-      {/* Top Header: Breadcrumbs Only (No subtext, search bar moved beside calendar, notifications removed) */}
+      {/* Top Header: Breadcrumbs Only */}
       <div>
         <nav
           aria-label="Breadcrumb"
@@ -99,38 +134,37 @@ export function CommissionDetailsView({
         </div>
 
         {/* Card 2: Contact Information */}
-        <div className="flex min-h-[279px] flex-col justify-center rounded-[32px] border border-black/[0.03] bg-white p-6 shadow-[0px_8px_30px_rgba(0,0,0,0.04)]">
-          <h3 className="text-sm font-bold uppercase tracking-[0.7px] text-[#404750]">
+        <div className="flex min-h-[279px] flex-col rounded-[32px] border border-black/[0.03] bg-white p-6 sm:p-8 shadow-[0px_8px_30px_rgba(0,0,0,0.04)]">
+          <h3 className="text-sm font-bold tracking-[0.5px] text-[#191C1E] uppercase">
             CONTACT INFORMATION
           </h3>
-
-          <div className="mt-4 flex flex-col gap-3">
+          <div className="mt-5 flex flex-col gap-4">
             {/* Email Address */}
-            <div className="flex items-center gap-4 rounded-xl border border-[rgba(192,199,210,0.1)] bg-[#F4F4F4]/70 p-4">
-              <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-[rgba(39,128,196,0.1)] text-[#2780C4]">
+            <div className="flex items-center gap-4 rounded-2xl bg-[#F8FAFC] p-4 border border-[#F1F5F9]">
+              <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-[#EAF4FB] text-[#2780C4]">
                 <Mail size={18} />
               </div>
-              <div className="min-w-0 flex-1">
-                <span className="block text-[11px] font-normal uppercase tracking-[0.55px] text-[#404750]">
-                  EMAIL ADDRESS
+              <div className="min-w-0">
+                <span className="block text-xs font-medium text-[#86868B] uppercase tracking-wider">
+                  Email Address
                 </span>
-                <span className="block text-base font-semibold text-[#191C1E] truncate">
+                <span className="truncate text-sm font-bold text-[#191C1E]">
                   {agent.email || `${agent.name.toLowerCase().replace(/\s+/g, '.')}@glc-agents.in`}
                 </span>
               </div>
             </div>
 
             {/* Phone Number */}
-            <div className="flex items-center gap-4 rounded-xl border border-[rgba(192,199,210,0.1)] bg-[#F4F4F4]/70 p-4">
-              <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-[rgba(39,128,196,0.1)] text-[#2780C4]">
+            <div className="flex items-center gap-4 rounded-2xl bg-[#F8FAFC] p-4 border border-[#F1F5F9]">
+              <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-[#EAF4FB] text-[#2780C4]">
                 <Phone size={18} />
               </div>
               <div>
-                <span className="block text-[11px] font-normal uppercase tracking-[0.55px] text-[#404750]">
-                  PHONE NUMBER
+                <span className="block text-xs font-medium text-[#86868B] uppercase tracking-wider">
+                  Phone Number
                 </span>
-                <span className="block text-base font-semibold text-[#191C1E]">
-                  {agent.phone || '+91 98765 43210'}
+                <span className="text-sm font-bold text-[#191C1E]">
+                  {agent.phone || '+91 98490 23145'}
                 </span>
               </div>
             </div>
@@ -138,19 +172,16 @@ export function CommissionDetailsView({
         </div>
 
         {/* Card 3: Assigned Territory */}
-        <div className="flex min-h-[279px] flex-col justify-center rounded-[32px] border border-black/[0.03] bg-white p-6 shadow-[0px_8px_30px_rgba(0,0,0,0.04)]">
-          <h3 className="text-sm font-bold uppercase tracking-[0.7px] text-[#404750]">
+        <div className="flex min-h-[279px] flex-col rounded-[32px] border border-black/[0.03] bg-white p-6 sm:p-8 shadow-[0px_8px_30px_rgba(0,0,0,0.04)]">
+          <h3 className="text-sm font-bold tracking-[0.5px] text-[#191C1E] uppercase">
             ASSIGNED TERRITORY
           </h3>
-
-          <div className="mt-4 flex flex-col">
+          <div className="mt-5 flex flex-col gap-5">
             {/* Region */}
-            <div className="flex items-center justify-between border-b border-[rgba(192,199,210,0.15)] py-3">
-              <div className="flex items-center gap-3">
-                <Map size={18} className="text-[#404750]" />
-                <span className="text-sm font-medium text-[#404750]">
-                  Region
-                </span>
+            <div className="flex items-center justify-between border-b border-[#F2F2F2] pb-3">
+              <div className="flex items-center gap-2.5 text-[#5E5E63]">
+                <Map size={16} />
+                <span className="text-sm font-medium">Region</span>
               </div>
               <span className="text-base font-semibold text-[#191C1E]">
                 {agent.region}
@@ -158,12 +189,10 @@ export function CommissionDetailsView({
             </div>
 
             {/* District */}
-            <div className="flex items-center justify-between border-b border-[rgba(192,199,210,0.15)] py-3">
-              <div className="flex items-center gap-3">
-                <Building2 size={18} className="text-[#404750]" />
-                <span className="text-sm font-medium text-[#404750]">
-                  District
-                </span>
+            <div className="flex items-center justify-between border-b border-[#F2F2F2] pb-3">
+              <div className="flex items-center gap-2.5 text-[#5E5E63]">
+                <Building2 size={16} />
+                <span className="text-sm font-medium">District</span>
               </div>
               <span className="text-base font-semibold text-[#191C1E]">
                 {agent.district || agent.region}
@@ -171,12 +200,10 @@ export function CommissionDetailsView({
             </div>
 
             {/* Mandal */}
-            <div className="flex items-center justify-between py-3">
-              <div className="flex items-center gap-3">
-                <MapPin size={18} className="text-[#404750]" />
-                <span className="text-sm font-medium text-[#404750]">
-                  Mandal
-                </span>
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-2.5 text-[#5E5E63]">
+                <MapPin size={16} />
+                <span className="text-sm font-medium">Mandal</span>
               </div>
               <span className="text-base font-semibold text-[#191C1E]">
                 {agent.mandal || agent.areaOrDistrict}
@@ -199,9 +226,43 @@ export function CommissionDetailsView({
             </p>
           </div>
 
-          <div className="flex items-center gap-3">
+          <div className="flex flex-wrap items-center gap-3">
+            {/* Segmented Tabs: Settled / Pending */}
+            <div
+              role="tablist"
+              aria-label="Filter deals by settlement status"
+              className="inline-flex h-[42px] items-center rounded-full border border-[#E5E5EA] bg-white p-1 shadow-xs"
+            >
+              <button
+                type="button"
+                role="tab"
+                aria-selected={statusTab === 'Settled'}
+                onClick={() => setStatusTab('Settled')}
+                className={`h-[34px] rounded-full px-4 text-xs sm:text-sm font-semibold transition-all cursor-pointer ${
+                  statusTab === 'Settled'
+                    ? 'bg-[#2780C4] text-white shadow-xs'
+                    : 'text-[#64748B] hover:text-[#191C1D]'
+                }`}
+              >
+                Settled
+              </button>
+              <button
+                type="button"
+                role="tab"
+                aria-selected={statusTab === 'Pending'}
+                onClick={() => setStatusTab('Pending')}
+                className={`h-[34px] rounded-full px-4 text-xs sm:text-sm font-semibold transition-all cursor-pointer ${
+                  statusTab === 'Pending'
+                    ? 'bg-[#2780C4] text-white shadow-xs'
+                    : 'text-[#64748B] hover:text-[#191C1D]'
+                }`}
+              >
+                Pending
+              </button>
+            </div>
+
             {/* Search Land Id input moved beside Calendar */}
-            <div className="flex h-[42px] w-full items-center gap-2 rounded-full border border-[#E5E5EA] bg-white px-4 shadow-[0px_2px_8px_rgba(0,0,0,0.04)] transition focus-within:border-brand/40 focus-within:ring-2 focus-within:ring-brand/10 sm:w-[260px]">
+            <div className="flex h-[42px] w-full items-center gap-2 rounded-full border border-[#E5E5EA] bg-white px-4 shadow-[0px_2px_8px_rgba(0,0,0,0.04)] transition focus-within:border-brand/40 focus-within:ring-2 focus-within:ring-brand/10 sm:w-[220px] md:w-[260px]">
               <Search size={16} className="shrink-0 text-[#86868B]" />
               <input
                 type="search"
@@ -213,19 +274,16 @@ export function CommissionDetailsView({
               />
             </div>
 
-            {/* Calendar Button */}
-            <button
-              type="button"
-              onClick={() => alert('Calendar filter (preview)')}
-              className="inline-flex h-[42px] shrink-0 items-center gap-2 rounded-full border border-[#E5E5EA] bg-white px-5 text-sm font-normal text-[#1D1D1F] shadow-[0px_2px_8px_rgba(0,0,0,0.04)] transition hover:bg-slate-50 focus-visible:outline-2 focus-visible:outline-brand"
-            >
-              <Calendar size={16} className="text-[#86868B]" />
-              <span>Calendar</span>
-            </button>
+            {/* Date Selector - Only Calendar Icon matching Subscriptions */}
+            <DatePickerPopover
+              value={selectedDate}
+              onChange={setSelectedDate}
+              defaultViewDate="2023-10-12"
+            />
           </div>
         </div>
 
-        {/* Table View: Revenue Breakdown by Location (Action column removed) */}
+        {/* Table View: Revenue Breakdown by Location */}
         <div className="overflow-hidden rounded-[24px] border border-[#E5E5EA]/80 bg-white shadow-xs">
           <div className="overflow-x-auto">
             <table
@@ -249,81 +307,97 @@ export function CommissionDetailsView({
                   <th scope="col" className="px-6 sm:px-8 py-4 text-right">
                     Earned
                   </th>
-                  <th scope="col" className="px-6 sm:px-8 py-4 text-right">
-                    Pending
-                  </th>
                   <th scope="col" className="px-6 sm:px-8 py-4 text-center">
                     Status
+                  </th>
+                  <th scope="col" className="px-6 sm:px-8 py-4 text-right">
+                    Action
                   </th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-[#F2F2F2]">
-                {filteredDeals.map((deal) => {
-                  const isSettled = deal.status === 'Settled';
+                {filteredDeals.length === 0 ? (
+                  <tr>
+                    <td colSpan={7} className="px-8 py-12 text-center text-sm text-[#64748B]">
+                      {landSearch
+                        ? `No ${statusTab.toLowerCase()} farmland records found matching “${landSearch}”.`
+                        : `No ${statusTab.toLowerCase()} farmland records found.`}
+                    </td>
+                  </tr>
+                ) : (
+                  filteredDeals.map((deal) => {
+                    const isSettled = deal.status === 'Settled';
 
-                  return (
-                    <tr
-                      key={deal.id}
-                      className="group transition-colors hover:bg-[#F8FAFC]"
-                    >
-                      {/* Farmland ID with thumbnail */}
-                      <td className="px-6 sm:px-8 py-4 sm:py-5">
-                        <div className="flex items-center gap-3">
-                          <img
-                            src={deal.imageUrl}
-                            alt={deal.landId}
-                            className="h-9 w-9 shrink-0 rounded-lg object-cover ring-1 ring-black/5"
-                          />
-                          <span className="inline-flex items-center rounded-lg bg-[#F1F5F9] px-2.5 py-1 text-xs font-bold text-[#00609A]">
-                            {deal.landId}
+                    return (
+                      <tr
+                        key={deal.id}
+                        className="group transition-colors hover:bg-[#F8FAFC]"
+                      >
+                        {/* Farmland ID with thumbnail */}
+                        <td className="px-6 sm:px-8 py-4 sm:py-5">
+                          <div className="flex items-center gap-3">
+                            <img
+                              src={deal.imageUrl}
+                              alt={deal.landId}
+                              className="h-9 w-9 shrink-0 rounded-lg object-cover ring-1 ring-black/5"
+                            />
+                            <span className="inline-flex items-center rounded-lg bg-[#F1F5F9] px-2.5 py-1 text-xs font-bold text-[#00609A]">
+                              {deal.landId}
+                            </span>
+                          </div>
+                        </td>
+
+                        {/* Customer */}
+                        <td className="px-6 sm:px-8 py-4 sm:py-5">
+                          <div className="font-bold text-[#191C1E] text-sm">
+                            {deal.customerName}
+                          </div>
+                        </td>
+
+                        {/* Location */}
+                        <td className="px-6 sm:px-8 py-4 sm:py-5">
+                          <span className="font-medium text-[#46464A] text-sm">
+                            {deal.location}
                           </span>
-                        </div>
-                      </td>
+                        </td>
 
-                      {/* Customer */}
-                      <td className="px-6 sm:px-8 py-4 sm:py-5">
-                        <div className="font-bold text-[#191C1E] text-sm">
-                          {deal.customerName}
-                        </div>
-                      </td>
+                        {/* Sale Value */}
+                        <td className="px-6 sm:px-8 py-4 sm:py-5 text-right font-semibold text-[#191C1E] text-sm tabular-nums">
+                          {deal.saleValue}
+                        </td>
 
-                      {/* Location */}
-                      <td className="px-6 sm:px-8 py-4 sm:py-5">
-                        <span className="font-medium text-[#46464A] text-sm">
-                          {deal.location}
-                        </span>
-                      </td>
+                        {/* Earned */}
+                        <td className="px-6 sm:px-8 py-4 sm:py-5 text-right font-bold text-[#2780C4] text-base tabular-nums">
+                          {deal.earnedAmount}
+                        </td>
 
-                      {/* Sale Value */}
-                      <td className="px-6 sm:px-8 py-4 sm:py-5 text-right font-semibold text-[#191C1E] text-sm tabular-nums">
-                        {deal.saleValue}
-                      </td>
+                        {/* Status */}
+                        <td className="px-6 sm:px-8 py-4 sm:py-5 text-center">
+                          <span
+                            className={`inline-block rounded-full px-3.5 py-1 text-xs font-semibold ${
+                              isSettled
+                                ? 'bg-[#2780C4] text-white'
+                                : 'bg-[#EF4646] text-white'
+                            }`}
+                          >
+                            {deal.status}
+                          </span>
+                        </td>
 
-                      {/* Earned */}
-                      <td className="px-6 sm:px-8 py-4 sm:py-5 text-right font-bold text-[#2780C4] text-base tabular-nums">
-                        {deal.earnedAmount}
-                      </td>
-
-                      {/* Pending */}
-                      <td className="px-6 sm:px-8 py-4 sm:py-5 text-right font-medium text-[#404750] text-sm tabular-nums">
-                        {deal.pendingAmount}
-                      </td>
-
-                      {/* Status */}
-                      <td className="px-6 sm:px-8 py-4 sm:py-5 text-center">
-                        <span
-                          className={`inline-block rounded-full px-3.5 py-1 text-xs font-semibold ${
-                            isSettled
-                              ? 'bg-[#2780C4] text-white'
-                              : 'bg-[#EF4646] text-white'
-                          }`}
-                        >
-                          {deal.status}
-                        </span>
-                      </td>
-                    </tr>
-                  );
-                })}
+                        {/* Action View CTA Button */}
+                        <td className="px-6 sm:px-8 py-4 sm:py-5 text-right">
+                          <button
+                            type="button"
+                            onClick={() => setSelectedDeal(deal)}
+                            className="inline-flex h-[37px] w-[85px] items-center justify-center rounded-[39px] bg-[#2780C4] text-xs font-semibold text-white shadow-xs transition-all hover:bg-[#1f6da8] hover:shadow-md active:scale-95 focus-visible:outline-2 focus-visible:outline-brand cursor-pointer"
+                          >
+                            View
+                          </button>
+                        </td>
+                      </tr>
+                    );
+                  })
+                )}
               </tbody>
             </table>
           </div>
@@ -333,7 +407,7 @@ export function CommissionDetailsView({
             total={filteredDeals.length}
             page={1}
             pageSize={4}
-            itemLabel="location entries"
+            itemLabel={`${statusTab.toLowerCase()} location entries`}
             onPageChange={() => {}}
           />
         </div>

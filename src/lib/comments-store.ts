@@ -37,29 +37,50 @@ export const TRASH_STORAGE_KEY = 'glc_figma_comments_trash_v1';
 export const DELETED_IDS_KEY = 'glc_figma_deleted_ids_v1';
 export const HAS_INITIALIZED_KEY = 'glc_figma_comments_initialized_v1';
 
-// Initial sample comments
-export const INITIAL_COMMENTS: FigmaComment[] = [
-  {
-    id: 'comment-initial-1',
-    route: '/',
-    relX: 350,
-    relY: 180,
-    containerWidth: 1440,
-    text: 'Platform Revenue Run-Rate is trending up nicely this quarter. Check agent payout ratios.',
-    author: CURRENT_USER,
-    createdAt: new Date(Date.now() - 1000 * 60 * 45).toISOString(), // 45m ago
-  },
-];
+// Initial sample comments - empty array so no phantom comments are seeded
+export const INITIAL_COMMENTS: FigmaComment[] = [];
+
+// Built-in trashed IDs that should never be shown on the web
+export const PERMANENTLY_TRASHED_IDS = new Set<string>(['comment-initial-1']);
 
 export function getDeletedCommentIds(): Set<string> {
-  if (typeof window === 'undefined') return new Set();
+  if (typeof window === 'undefined') return new Set(PERMANENTLY_TRASHED_IDS);
   try {
     const raw = localStorage.getItem(DELETED_IDS_KEY);
-    if (!raw) return new Set();
-    const parsed = JSON.parse(raw);
-    return new Set(Array.isArray(parsed) ? parsed : []);
+    const set = new Set<string>(PERMANENTLY_TRASHED_IDS);
+    if (raw) {
+      const parsed = JSON.parse(raw);
+      if (Array.isArray(parsed)) {
+        parsed.forEach((id: string) => set.add(id));
+      }
+    }
+    return set;
   } catch {
-    return new Set();
+    return new Set(PERMANENTLY_TRASHED_IDS);
+  }
+}
+
+export function addDeletedCommentId(id: string): void {
+  if (typeof window === 'undefined' || !id) return;
+  try {
+    const set = getDeletedCommentIds();
+    set.add(id);
+    localStorage.setItem(DELETED_IDS_KEY, JSON.stringify(Array.from(set)));
+  } catch (error) {
+    console.error('Failed to add deleted comment ID', error);
+  }
+}
+
+export function syncDeletedIds(ids: Iterable<string>): void {
+  if (typeof window === 'undefined') return;
+  try {
+    const set = getDeletedCommentIds();
+    for (const id of ids) {
+      if (id) set.add(id);
+    }
+    localStorage.setItem(DELETED_IDS_KEY, JSON.stringify(Array.from(set)));
+  } catch (error) {
+    console.error('Failed to sync deleted comment IDs', error);
   }
 }
 
@@ -67,25 +88,24 @@ export function loadCommentsFromStorage(): FigmaComment[] {
   if (typeof window === 'undefined') return [];
   try {
     const deletedIds = getDeletedCommentIds();
-    const hasInitialized = localStorage.getItem(HAS_INITIALIZED_KEY);
     const raw = localStorage.getItem(STORAGE_KEY);
 
-    if (!hasInitialized) {
-      // First run ever: seed only items that haven't been deleted
-      localStorage.setItem(HAS_INITIALIZED_KEY, 'true');
-      const filteredInitial = INITIAL_COMMENTS.filter((c) => !deletedIds.has(c.id));
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(filteredInitial));
-      return filteredInitial;
-    }
-
     if (!raw) {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify([]));
       return [];
     }
 
     const parsed = JSON.parse(raw);
     if (Array.isArray(parsed)) {
-      // Strictly exclude any comment that has ever been moved to trash
-      return parsed.filter((c: FigmaComment) => c && c.id && !deletedIds.has(c.id));
+      // Strictly exclude any comment that is deleted or matches initial placeholder
+      const sanitized = parsed.filter(
+        (c: FigmaComment) => c && c.id && !deletedIds.has(c.id) && c.id !== 'comment-initial-1'
+      );
+      // Clean up storage immediately if stale comments were present
+      if (sanitized.length !== parsed.length) {
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(sanitized));
+      }
+      return sanitized;
     }
     return [];
   } catch (error) {
@@ -99,7 +119,9 @@ export function saveCommentsToStorage(comments: FigmaComment[]): void {
   try {
     const deletedIds = getDeletedCommentIds();
     // Guarantee no deleted comments get saved back
-    const sanitized = comments.filter((c) => c && c.id && !deletedIds.has(c.id));
+    const sanitized = comments.filter(
+      (c) => c && c.id && !deletedIds.has(c.id) && c.id !== 'comment-initial-1'
+    );
     localStorage.setItem(STORAGE_KEY, JSON.stringify(sanitized));
   } catch (error) {
     console.error('Failed to save comments to localStorage', error);
@@ -120,14 +142,8 @@ export async function moveToTrash(comment: FigmaComment): Promise<void> {
     deletedAt: new Date().toISOString(),
   };
 
-  // 1. Blacklist ID so it is never shown again on the web
-  try {
-    const deletedIds = getDeletedCommentIds();
-    deletedIds.add(comment.id);
-    localStorage.setItem(DELETED_IDS_KEY, JSON.stringify(Array.from(deletedIds)));
-  } catch (err) {
-    console.error('Failed to update deleted IDs set', err);
-  }
+  // 1. Blacklist ID synchronously so it is never shown again on the web
+  addDeletedCommentId(comment.id);
 
   // 2. Save into browser trash storage
   try {
